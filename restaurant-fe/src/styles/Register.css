@@ -1,0 +1,93 @@
+.bground_register{
+    background: linear-gradient(to right bottom, #10152B, #000000); /* Ví dụ nền tối */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+.register_card{
+    height: 400px;
+    width: 30%;
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    background: rgba(0, 132, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    gap: 20px;
+    justify-items: center;
+    padding-bottom: 10px;
+}
+.input_user{
+    background: rgba(255, 255, 255, 0.1); /* Nền trắng rất mờ (10% độ đục) */
+    width: 75%;
+    display: flex;
+    /* justify-items: center; */
+    justify-content: center;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 10px;
+}
+.username_register{ 
+    background: transparent; 
+    color: white;   
+    border-style: none;
+    height: 40%;
+    width: 90%;
+    align-content: center;
+}
+.input_password{
+    background: rgba(255, 255, 255, 0.1); /* Nền trắng rất mờ (10% độ đục) */
+    width: 75%;
+    display: flex;
+    /* justify-items: center; */
+    justify-content: center;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 10px;
+}
+.password_register{
+    background: transparent; 
+    color: white;   
+    border-style: none;
+    height: 40%;
+    width: 90%;
+    align-content: center;
+}
+.input_email{
+    background: rgba(255, 255, 255, 0.1); /* Nền trắng rất mờ (10% độ đục) */
+    width: 75%;
+    display: flex;
+    /* justify-items: center; */
+    justify-content: center;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 10px;
+}
+.email_register{
+    background: transparent; 
+    color: white;   
+    border-style: none;
+    height: 40%;
+    width: 90%;
+    align-content: center;
+}
+.button_register{
+    background-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 5px; 
+    width: 50%;
+    color: white;
+}
+.button_register:hover{
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.122);
+}
+
+
+
+

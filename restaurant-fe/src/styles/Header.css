@@ -1,0 +1,26 @@
+
+/* ===== HEADER ===== */
+.header {
+  height: 70px;
+  background-color: #ffffff;
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header__title {
+  min-width: 200px;   /* hoặc width cố định */
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header__actions{
+  display: flex;
+  gap: 10px;
+  
+}

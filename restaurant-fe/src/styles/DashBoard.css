@@ -1,0 +1,74 @@
+    /* ===== DASHBOARD ===== */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ===== STATS ===== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stat-card svg {
+  font-size: 22px;
+  padding: 12px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.stat-card p {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.stat-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* ===== BODY ===== */
+.dashboard-body {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+}
+
+/* ===== LEFT: ORDERS LIST ===== */
+.orders-list {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.orders-header h3 { 
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.filter-btn {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
