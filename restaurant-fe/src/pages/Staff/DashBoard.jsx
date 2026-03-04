@@ -27,7 +27,7 @@ export default function Dashboard() {
         <div className="stat-card">
           <FontAwesomeIcon icon={faCheckCircle} />
           <div>
-            <p>Total Delivered</p>
+            <p>Total Reservations</p>
             <h3>567</h3>
           </div>
         </div>

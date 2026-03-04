@@ -3,7 +3,7 @@ import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import "../styles/Login.css"
+import "../../styles/Login.css"
 
 
 export default function Login({onSubmit}){
@@ -19,32 +19,35 @@ export default function Login({onSubmit}){
     return (
         <div className="bground_login">
             <form className="login_card" onSubmit={handleSubmit}>
-                <h2>Login</h2>
+                <h2 className="login_title">Đăng nhập</h2>
+
                 <div className="input_user">
-                    <FontAwesomeIcon icon={faUser} size="xl"/>
+                    <FontAwesomeIcon icon={faUser} />
                     <input
                         type="text"
                         className="username_login"
-                        placeholder="username"
+                        placeholder="Tên đăng nhập"
                         value={username}
                         onChange={e => setUsername(e.target.value)}
                     />
                 </div>
+
                 <div className="input_password">
-                    <FontAwesomeIcon icon = {faLock} size="xl" />
+                    <FontAwesomeIcon icon={faLock} />
                     <input
                         type="password"
                         className="password_login"
-                        placeholder="Password"
+                        placeholder="Mật khẩu"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                     />
                 </div>
-                <button type="submit" className="button_login">Login</button>
+
+                <button type="submit" className="button_login">Đăng nhập</button>
+
                 <div className="register">
-                    Chưa có tài khoản ? <Link to = "/register">Đăng ký</Link>
+                    Chưa có tài khoản? <Link to="/register">Đăng ký</Link>
                 </div>
-                
             </form>
         </div>
     )

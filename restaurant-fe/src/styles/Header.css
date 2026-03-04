@@ -1,5 +1,4 @@
 
-/* ===== HEADER ===== */
 .header {
   height: 70px;
   background-color: #ffffff;
@@ -12,15 +11,27 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
+
 .header__title {
-  min-width: 200px;   /* hoặc width cố định */
-  max-width: 300px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin: 0;
+  position: relative;
+  font-size: 25px;     
+  font-weight: 700;    
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  color: #0f172a;
 }
-.header__actions{
+
+
+
+.header__search {
   display: flex;
+  align-items: center;
   gap: 10px;
-  
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }

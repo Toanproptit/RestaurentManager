@@ -1,5 +1,5 @@
 import { register } from '../auth/mock'
-import RegisterForm from '../components/RegisterForm'
+import RegisterForm from '../components/auth/RegisterForm'
 import { useNavigate } from 'react-router-dom'
 
 function Register() {
@@ -11,7 +11,7 @@ function Register() {
   }
 
   return <RegisterForm onSubmit={handleRegister} />
-
+  
 }
 
 export default Register

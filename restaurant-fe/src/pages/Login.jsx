@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import LoginForm from '../components/LoginForm'
+import LoginForm from '../components/auth/LoginForm'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../auth/mock'
 

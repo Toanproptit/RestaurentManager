@@ -5,10 +5,15 @@ import Dashboard from "../pages/Staff/DashBoard";
 import Orders from "../pages/Staff/Orders";
 import Customer from "../pages/Staff/Customer";
 import Delivery from "../pages/Staff/Delivery";
-import Reports from "../pages/Staff/Reports";
+import Reports from "../pages/Admin/Reports";
 import Reservation from "../pages/Staff/Reservation/Reservation";
 import StaffLayout from "../Layouts/StaffLayout";
 import AdminLayout from "../Layouts/AdminLayout";
+import Activity from "../pages/Staff/Histories";
+import Staff from "../pages/Admin/Staffs";
+import StaffDetail from "../pages/Admin/StaffDetail";
+import MenuManagement from "../pages/Admin/MenuManagement";
+import Menu from "../pages/Staff/Menu";
 
 function AppRouter() {
   return (
@@ -22,12 +27,22 @@ function AppRouter() {
         <Route path="customers" element ={<Customer/>}/>
         <Route path="orders" element={<Orders />} />
         <Route path="delivery" element = {<Delivery/>}/>
-        <Route path="reports" element = {<Reports/>}/>
         <Route path="reservations" element ={<Reservation/>}/>
+        <Route path="histories" element={<Activity/>} />
+        <Route path="menu" element = {<Menu/>}/>
       </Route>
 
       <Route path="/admin" element = {<AdminLayout/>}> 
-
+        <Route index element={<Dashboard/>} />
+        <Route path="customers" element ={<Customer/>}/>
+        <Route path="orders" element={<Orders />} />
+        <Route path="delivery" element = {<Delivery/>}/>
+        <Route path="reports" element = {<Reports/>}/>
+        <Route path="reservations" element ={<Reservation/>}/>
+        <Route path="histories" element={<Activity/>} />
+        <Route path="staffs" element={<Staff />} />
+        <Route path="menu" element = {<MenuManagement/>}/>
+        <Route path="staffs/:staffId" element={<StaffDetail/>}/>
       </Route>
     
     

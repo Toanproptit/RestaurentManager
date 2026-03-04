@@ -5,29 +5,28 @@ import {
   faBell,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
-import "../styles/Header.css"
+import "../../styles/Header.css"
 
 export default function Header() {
 
     const location = useLocation();
-    const getTitle = () =>{
-        switch (location.pathname){
-            case "/":
-                return "Dashboard";
-            case "/orders":
-                return "Orders";
-            case "/customers":
-                return "Customers";
-            case "/delivery":
-                return "Delivery";
-            case "/reports":
-                return "Reports";
-            case "/reservations":
-                return "Reservations"
-            default:
-                return "";
-        }
-    }
+    
+    const getTitle = () => {
+    const path = location.pathname;
+
+      if (path.includes("/orders")) return "Orders";
+      if (path.includes("/customers")) return "Customers";
+      if (path.includes("/delivery")) return "Delivery";
+      if (path.includes("/reports")) return "Reports";
+      if (path.includes("/reservations")) return "Reservations";
+      if (path.includes("/histories")) return "Histories";
+      if (path.includes("/staffs")) return "Staffs";
+      if (path.includes("foods")) return "Foods"; 
+      if (path.includes("menu")) return "Menu";
+      if (path === "/staff/" || path === "/admin/") return "Dashboard";
+
+      return "";
+  };
 
   return (
     <header className="header">
@@ -40,7 +39,7 @@ export default function Header() {
         <FontAwesomeIcon icon={faMagnifyingGlass} />
         <input
           type="text"
-          placeholder="Search Order ID"
+          placeholder="Search Anything"
         />
       </div>
 

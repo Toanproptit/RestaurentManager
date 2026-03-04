@@ -4,12 +4,7 @@ export default function StepTable({ data, setData, next, back }) {
       <h3>2. Chọn bàn</h3>
 
       <div className="table-list">
-        {mockTables.map(table => (
-          <label key={table.id} className="table-item">
-            <input type="checkbox" />
-            {table.name} ({table.maxGuest} chỗ)
-          </label>
-        ))}
+        
       </div>
 
       <div className="btn-group">

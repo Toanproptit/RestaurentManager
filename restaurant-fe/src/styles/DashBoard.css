@@ -1,4 +1,4 @@
-    /* ===== DASHBOARD ===== */
+/* ===== DASHBOARD ===== */
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -14,29 +14,36 @@
 
 .stat-card {
   background: #ffffff;
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 18px;
   display: flex;
   align-items: center;
   gap: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+/* ICON */
 .stat-card svg {
   font-size: 22px;
   padding: 12px;
   border-radius: 50%;
-  background: #e0f2fe;
-  color: #0284c7;
+  background: #eef2ff;   /* Indigo nhẹ */
+  color: #6366f1;        /* Primary */
 }
 
+/* LABEL TEXT */
 .stat-card p {
   font-size: 13px;
-  color: #64748b;
+  color: #64748b;  /* Xám hiện đại */
+  margin: 0;
 }
 
+/* NUMBER */
 .stat-card h3 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
+  color: #0f172a;  /* Dark navy */
+  margin: 4px 0 0;
 }
 
 /* ===== BODY ===== */
@@ -49,11 +56,12 @@
 /* ===== LEFT: ORDERS LIST ===== */
 .orders-list {
   background: #ffffff;
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .orders-header {
@@ -65,10 +73,20 @@
 .orders-header h3 { 
   font-size: 18px;
   font-weight: 600;
+  color: #0f172a;
 }
 
+/* FILTER BUTTON */
 .filter-btn {
   background: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
+  padding: 6px 12px;
+  color: #475569;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filter-btn:hover {
+  background: #f1f5f9;
 }
