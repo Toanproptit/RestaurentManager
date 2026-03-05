@@ -13,12 +13,12 @@ public class CustomerMapper {
 
     private final ReservationSummaryMapper reservationSummaryMapper;
 
-    public CustomerMapper(ReservationSummaryMapper reservationSummerMapper, ReservationSummaryMapper reservationSummaryMapper) {
+    public CustomerMapper(ReservationSummaryMapper reservationSummaryMapper) {
         this.reservationSummaryMapper = reservationSummaryMapper;
     }
 
 
-    public CustomerResponse toCustomerRepsonse(Customer customer){
+    public CustomerResponse toCustomerResponse(Customer customer){
         return new CustomerResponse(customer.getName(),customer.getEmail(),customer.getPhone(),customer
                 .getReservations().stream().map(reservationSummaryMapper::reservationSummeryResponse).collect(Collectors.
                         toSet()));
