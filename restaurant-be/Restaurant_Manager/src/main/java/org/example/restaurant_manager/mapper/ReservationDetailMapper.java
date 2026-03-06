@@ -1,7 +1,7 @@
 package org.example.restaurant_manager.mapper;
 
 import org.example.restaurant_manager.dto.response.ReservationDetailResponse;
-import org.example.restaurant_manager.model.ReservationDetail;
+import org.example.restaurant_manager.entity.ReservationDetail;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;

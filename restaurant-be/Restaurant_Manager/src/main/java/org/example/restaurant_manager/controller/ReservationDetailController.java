@@ -2,7 +2,7 @@ package org.example.restaurant_manager.controller;
 
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.ReservationDetailResponse;
-import org.example.restaurant_manager.model.ReservationDetail;
+import org.example.restaurant_manager.entity.ReservationDetail;
 import org.example.restaurant_manager.service.ReservationDetailService;
 import org.springframework.web.bind.annotation.*;
 

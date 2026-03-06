@@ -1,4 +1,4 @@
-package org.example.restaurant_manager.model;
+package org.example.restaurant_manager.entity;
 
 
 import jakarta.persistence.*;
@@ -7,21 +7,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Entity
+@Table(name = "foods")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table (name = "foods")
 public class Food {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
     private String name;
-    @NotBlank
+
     private String description;
 
-    private double price;
+    private Double price;
+
     private String image;
+
+    @OneToMany(mappedBy = "food", fetch = FetchType.LAZY)
+    private List<OrderDetail> orderDetails = new ArrayList<>();
 }

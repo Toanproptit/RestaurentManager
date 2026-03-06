@@ -3,7 +3,7 @@ package org.example.restaurant_manager.controller;
 
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.CustomerResponse;
-import org.example.restaurant_manager.model.Customer;
+import org.example.restaurant_manager.entity.Customer;
 import org.example.restaurant_manager.service.CustomerService;
 import org.springframework.web.bind.annotation.*;
 

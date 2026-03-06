@@ -1,4 +1,4 @@
-package org.example.restaurant_manager.model;
+package org.example.restaurant_manager.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,5 +23,10 @@ public class DiningTable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_detail_id", nullable = false)
     private  ReservationDetail reservationDetail;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id" , nullable = false)
+    private Order order;
 
 }

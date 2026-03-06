@@ -2,8 +2,7 @@ package org.example.restaurant_manager.controller;
 
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.OrderResponse;
-import org.example.restaurant_manager.enums.OrderStatus;
-import org.example.restaurant_manager.model.Order;
+import org.example.restaurant_manager.entity.Order;
 import org.example.restaurant_manager.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 

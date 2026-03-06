@@ -4,7 +4,7 @@ package org.example.restaurant_manager.controller;
 
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.ReservationResponse;
-import org.example.restaurant_manager.model.Reservation;
+import org.example.restaurant_manager.entity.Reservation;
 import org.example.restaurant_manager.service.ReservationService;
 import org.springframework.web.bind.annotation.*;
 

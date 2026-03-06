@@ -1,16 +1,15 @@
 package org.example.restaurant_manager.service;
 
 import org.example.restaurant_manager.dto.response.OrderResponse;
+import org.example.restaurant_manager.entity.DiningTable;
 import org.example.restaurant_manager.enums.OrderStatus;
 import org.example.restaurant_manager.mapper.OrderMapper;
-import org.example.restaurant_manager.model.Order;
-import org.example.restaurant_manager.model.OrderDetail;
+import org.example.restaurant_manager.entity.Order;
+import org.example.restaurant_manager.entity.OrderDetail;
 import org.example.restaurant_manager.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -34,6 +33,16 @@ public class OrderService {
         if(orderDetails != null) {
             orderDetails.forEach(order::addOrderDetail);
         }
+
+        Set<DiningTable> diningTables = order.getDiningTables();
+        order.setDiningTables(new HashSet<>());
+
+        if(diningTables != null) {
+            diningTables.forEach(order::addDiningTable);
+        }
+
+
+
         order.setTotalAmount(calculateTotal(order));
 
         Order savedOrder = orderRepository.save(order);
