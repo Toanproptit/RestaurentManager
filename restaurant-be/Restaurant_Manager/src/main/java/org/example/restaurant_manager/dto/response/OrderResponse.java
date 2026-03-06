@@ -3,7 +3,6 @@ package org.example.restaurant_manager.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.example.restaurant_manager.enums.OrderStatus;
-import org.example.restaurant_manager.model.OrderDetail;
 
 import java.util.List;
 

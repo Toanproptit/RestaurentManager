@@ -1,6 +1,5 @@
-package org.example.restaurant_manager.model;
+package org.example.restaurant_manager.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 

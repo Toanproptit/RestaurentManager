@@ -3,8 +3,8 @@ package org.example.restaurant_manager.service;
 import jakarta.transaction.Transactional;
 import org.example.restaurant_manager.dto.response.ReservationResponse;
 import org.example.restaurant_manager.mapper.ReservationMapper;
-import org.example.restaurant_manager.model.Reservation;
-import org.example.restaurant_manager.model.ReservationDetail;
+import org.example.restaurant_manager.entity.Reservation;
+import org.example.restaurant_manager.entity.ReservationDetail;
 import org.example.restaurant_manager.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 

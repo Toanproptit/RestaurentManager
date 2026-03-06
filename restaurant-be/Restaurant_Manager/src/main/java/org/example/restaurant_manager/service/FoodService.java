@@ -2,7 +2,7 @@ package org.example.restaurant_manager.service;
 
 import org.example.restaurant_manager.dto.response.FoodResponse;
 import org.example.restaurant_manager.mapper.FoodMapper;
-import org.example.restaurant_manager.model.Food;
+import org.example.restaurant_manager.entity.Food;
 import org.example.restaurant_manager.repository.FoodRepository;
 import org.springframework.stereotype.Service;
 

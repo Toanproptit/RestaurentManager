@@ -1,7 +1,7 @@
 package org.example.restaurant_manager.mapper;
 
 import org.example.restaurant_manager.dto.response.DiningTableResponse;
-import org.example.restaurant_manager.model.DiningTable;
+import org.example.restaurant_manager.entity.DiningTable;
 import org.springframework.stereotype.Component;
 
 @Component
