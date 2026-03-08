@@ -6,6 +6,14 @@ spring:
     url: jdbc:mysql://localhost:3306/Restaurant_Manager
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
   jpa:
     hibernate:
       ddl-auto: update
+
+signer_key: ${SIGNER_KEY}
+
+logging:
+  level:
+    org.springframework.security: TRACE
+    org.springframework.security.web.FilterChainProxy: TRACE
