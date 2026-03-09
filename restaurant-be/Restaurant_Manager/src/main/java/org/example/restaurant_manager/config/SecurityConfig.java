@@ -17,7 +17,6 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/auth/**",
             "/error"
-            //hehe
     };
 
     @Bean
@@ -26,13 +25,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http , JwtDecode jwtDecode) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 );
+        JwtGrantedAuthoritiesConverter gac = new JwtGrantedAuthoritiesConverter();
+        gac.setAuthorityPrefix("ROLE_");
+        gac.setAuthoritiesClaimName("scope");
+
+        JwtAuthenticationConverter jca = new JwtAuthenticationConverter();
+        jca.setJwtGrantedAuthoritiesConverter(gac);
+
+        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
+                jwt.decoder(jwtDecode).jwtAuthenticationConverter(jca)));
 
         return http.build();
     }
