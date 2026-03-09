@@ -27,7 +27,7 @@ public class CustomerController {
                 .build();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ApiResponse<CustomerResponse> getById(@PathVariable Long id){
         return ApiResponse.<CustomerResponse>builder()
                 .code(200)
@@ -45,7 +45,7 @@ public class CustomerController {
                 .build();
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ApiResponse<CustomerResponse> update(@PathVariable Long id , @RequestBody Customer customer){
         return ApiResponse.<CustomerResponse> builder()
                 .code(200)
@@ -54,7 +54,7 @@ public class CustomerController {
                 .build();
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable Long id){
         customerService.deleteById(id);
         return ApiResponse.<Void>builder()
