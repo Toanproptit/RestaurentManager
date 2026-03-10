@@ -1,12 +1,14 @@
 package org.example.restaurant_manager.service;
 
-import org.example.restaurant_manager.dto.response.FoodResponse;
-import org.example.restaurant_manager.mapper.FoodMapper;
-import org.example.restaurant_manager.entity.Food;
-import org.example.restaurant_manager.repository.FoodRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+
+import org.example.restaurant_manager.dto.response.FoodResponse;
+import org.example.restaurant_manager.dto.response.TopSellingFoodResponse;
+import org.example.restaurant_manager.entity.Food;
+import org.example.restaurant_manager.mapper.FoodMapper;
+import org.example.restaurant_manager.repository.FoodRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 
 
 @Service
@@ -21,6 +23,10 @@ public class FoodService {
 
     public List<FoodResponse> findAll(){
         return foodRepository.findAll().stream().map(foodMapper::toFoodResponse).toList();
+    }
+
+    public List<TopSellingFoodResponse> getTopSellingFoods() {
+        return foodRepository.findTopSellingFoods(PageRequest.of(0, 5));
     }
 
     public FoodResponse findById(Long id){
