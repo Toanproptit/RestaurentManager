@@ -1,0 +1,51 @@
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Register
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "fullName": "Test User",
+  "username": "testuser",
+  "password": "123456",
+  "email": "testuser@example.com"
+}
+
+### Login
+# Copy token from response.result.token and paste into @token below
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser",
+  "password": "123456"
+}
+
+@token = paste_your_jwt_token_here
+
+### Create invoice for an order
+POST {{baseUrl}}/invoices/order/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "date": "2026-03-11T10:00:00.000+00:00",
+  "total": 250000
+}
+
+### Revenue by day
+GET {{baseUrl}}/invoices/revenue/daily
+Authorization: Bearer {{token}}
+
+### Revenue by month
+GET {{baseUrl}}/invoices/revenue/monthly
+Authorization: Bearer {{token}}
+
+### Revenue by year
+GET {{baseUrl}}/invoices/revenue/yearly
+Authorization: Bearer {{token}}
+
+### Top 5 selling foods
+GET {{baseUrl}}/foods/top-selling
+Authorization: Bearer {{token}}
