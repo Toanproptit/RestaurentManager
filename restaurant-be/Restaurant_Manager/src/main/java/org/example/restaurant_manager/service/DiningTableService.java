@@ -52,8 +52,14 @@ public class DiningTableService {
         diningTable.setName(request.getName());
         diningTable.setDescription(request.getDescription());
         diningTable.setMaxGuests(request.getMaxGuests());
-        diningTable.setReservationDetail(getReservationDetail(request.getReservationDetailId()));
-        diningTable.setOrder(getOrder(request.getOrderId()));
+
+        if (request.getReservationDetailId() != null) {
+            diningTable.setReservationDetail(getReservationDetail(request.getReservationDetailId()));
+        }
+
+        if (request.getOrderId() != null) {
+            diningTable.setOrder(getOrder(request.getOrderId()));
+        }
 
         return diningTableMapper.toDiningTableResponse(
                 diningTableRepository.save(diningTable)
@@ -73,10 +79,16 @@ public class DiningTableService {
         if (newTable.getMaxGuests() != null) {
             oldTable.setMaxGuests(newTable.getMaxGuests());
         }
-        if (newTable.getReservationDetailId() != null) {
+
+        if (Boolean.TRUE.equals(newTable.getClearReservationDetail())) {
+            oldTable.setReservationDetail(null);
+        } else if (newTable.getReservationDetailId() != null) {
             oldTable.setReservationDetail(getReservationDetail(newTable.getReservationDetailId()));
         }
-        if (newTable.getOrderId() != null) {
+
+        if (Boolean.TRUE.equals(newTable.getClearOrder())) {
+            oldTable.setOrder(null);
+        } else if (newTable.getOrderId() != null) {
             oldTable.setOrder(getOrder(newTable.getOrderId()));
         }
 

@@ -9,6 +9,4 @@ import lombok.Data;
 public class CreateInvoiceRequest {
     @NotNull(message = "Invoice date is required")
     private Date date;
-
-    private double total;
 }

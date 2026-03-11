@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.example.restaurant_manager.dto.request.CreateOrderRequest;
 import org.example.restaurant_manager.dto.request.UpdateOrderRequest;
@@ -17,6 +18,8 @@ import org.example.restaurant_manager.mapper.OrderMapper;
 import org.example.restaurant_manager.repository.DiningTableRepository;
 import org.example.restaurant_manager.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class OrderService {
@@ -33,6 +36,7 @@ public class OrderService {
         this.diningTableRepository = diningTableRepository;
     }
 
+    @Transactional
     public OrderResponse create(CreateOrderRequest request) {
 
         Order order = new Order();
@@ -42,13 +46,7 @@ public class OrderService {
         order.setOrderDetails(new ArrayList<>());
         order.setDiningTables(new HashSet<>());
 
-        if(request.getDiningTableIds() != null) {
-            request.getDiningTableIds().forEach(tableId -> {
-                DiningTable diningTable = diningTableRepository.findById(tableId)
-                        .orElseThrow(() -> new AppException(ErrorCode.DINING_TABLE_NOT_FOUND));
-                order.addDiningTable(diningTable);
-            });
-        }
+        replaceDiningTables(order, request.getDiningTableIds());
 
         order.setTotalAmount(calculateTotal(order));
 
@@ -70,6 +68,7 @@ public class OrderService {
         return orderMapper.toOrderResponse(order);
     }
 
+    @Transactional
     public OrderResponse update(Long id, UpdateOrderRequest newOrder) {
 
         Order oldOrder = getEntity(id);
@@ -77,13 +76,22 @@ public class OrderService {
         if (newOrder.getStatus() != null) {
             oldOrder.setStatus(newOrder.getStatus());
         }
+
+        if (newOrder.getDiningTableIds() != null) {
+            replaceDiningTables(oldOrder, newOrder.getDiningTableIds());
+        }
+
         oldOrder.setTotalAmount(calculateTotal(oldOrder));
 
         return orderMapper.toOrderResponse(orderRepository.save(oldOrder));
     }
 
+    @Transactional
     public void delete(Long id) {
         Order order = getEntity(id);
+
+        new HashSet<>(order.getDiningTables()).forEach(order::removeDiningTable);
+
         orderRepository.delete(order);
     }
 
@@ -98,6 +106,30 @@ public class OrderService {
                 .mapToLong(detail ->
                         Math.round(detail.getPrice() * detail.getQuantity()))
                 .sum();
+    }
+
+    private void replaceDiningTables(Order order, List<Long> diningTableIds) {
+        Set<DiningTable> currentTables = new HashSet<>(order.getDiningTables());
+        currentTables.forEach(order::removeDiningTable);
+
+        if (diningTableIds == null) {
+            return;
+        }
+
+        diningTableIds.stream()
+                .distinct()
+                .map(this::getDiningTable)
+                .forEach(diningTable -> {
+                    if (diningTable.getOrder() != null && diningTable.getOrder() != order) {
+                        diningTable.getOrder().getDiningTables().remove(diningTable);
+                    }
+                    order.addDiningTable(diningTable);
+                });
+    }
+
+    private DiningTable getDiningTable(Long id) {
+        return diningTableRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.DINING_TABLE_NOT_FOUND));
     }
 
 }

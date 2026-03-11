@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/foods/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/foods/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/foods/top-selling").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST , "/invoices/**").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 );
         JwtGrantedAuthoritiesConverter gac = new JwtGrantedAuthoritiesConverter();

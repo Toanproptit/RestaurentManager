@@ -13,6 +13,7 @@ import Activity from "../pages/Staff/Histories";
 import Staff from "../pages/Admin/Staffs";
 import StaffDetail from "../pages/Admin/StaffDetail";
 import MenuManagement from "../pages/Admin/MenuManagement";
+import TableManagement from "../pages/Admin/TableManagement";
 import Menu from "../pages/Staff/Menu";
 
 function AppRouter() {
@@ -42,6 +43,7 @@ function AppRouter() {
         <Route path="histories" element={<Activity/>} />
         <Route path="staffs" element={<Staff />} />
         <Route path="menu" element = {<MenuManagement/>}/>
+        <Route path="tables" element={<TableManagement />} />
         <Route path="staffs/:staffId" element={<StaffDetail/>}/>
       </Route>
     

@@ -7,6 +7,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class DiningTableMapper {
     public DiningTableResponse toDiningTableResponse(DiningTable diningTable){
-        return new DiningTableResponse(diningTable.getName(), diningTable.getDescription(),diningTable.getMaxGuests());
+    Long reservationDetailId = diningTable.getReservationDetail() != null
+        ? diningTable.getReservationDetail().getId()
+        : null;
+    Long orderId = diningTable.getOrder() != null
+        ? diningTable.getOrder().getId()
+        : null;
+
+    return new DiningTableResponse(
+        diningTable.getId(),
+        diningTable.getName(),
+        diningTable.getDescription(),
+        diningTable.getMaxGuests(),
+        reservationDetailId,
+        orderId
+    );
     }
 }
