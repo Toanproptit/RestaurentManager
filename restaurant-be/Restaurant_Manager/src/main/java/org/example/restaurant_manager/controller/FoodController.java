@@ -3,10 +3,11 @@ package org.example.restaurant_manager.controller;
 
 import java.util.List;
 
+import org.example.restaurant_manager.dto.request.CreateFoodRequest;
+import org.example.restaurant_manager.dto.request.UpdateFoodRequest;
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.FoodResponse;
 import org.example.restaurant_manager.dto.response.TopSellingFoodResponse;
-import org.example.restaurant_manager.entity.Food;
 import org.example.restaurant_manager.service.FoodService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/foods")
@@ -54,7 +57,7 @@ public class FoodController {
     }
 
     @PostMapping
-    public ApiResponse<FoodResponse> save(@RequestBody Food food){
+    public ApiResponse<FoodResponse> save(@RequestBody @Valid CreateFoodRequest food){
         return ApiResponse.<FoodResponse>builder()
                 .code(200)
                 .message("success")
@@ -62,7 +65,7 @@ public class FoodController {
                 .build();
     }
     @PutMapping("/{id}")
-    public ApiResponse<FoodResponse> updateFood(@PathVariable Long id, @RequestBody Food food){
+    public ApiResponse<FoodResponse> updateFood(@PathVariable Long id, @RequestBody @Valid UpdateFoodRequest food){
         return ApiResponse.<FoodResponse>builder()
                 .code(200)
                 .message("success")

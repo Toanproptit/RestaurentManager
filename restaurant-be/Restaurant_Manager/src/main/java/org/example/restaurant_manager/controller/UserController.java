@@ -1,12 +1,24 @@
 package org.example.restaurant_manager.controller;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
+import org.example.restaurant_manager.dto.request.CreateUserRequest;
+import org.example.restaurant_manager.dto.request.UpdateUserRequest;
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.UserResponse;
-import org.example.restaurant_manager.entity.User;
 import org.example.restaurant_manager.service.UserService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/users")
@@ -15,18 +27,18 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping
+    public ApiResponse<List<UserResponse>> getUsers() {
+        return ApiResponse.<List<UserResponse>>builder()
+                .code(200)
+                .message("Success")
+                .result(userService.findAll())
+                .build();
+    }
 
-//    @GetMapping("/myProfile")
-//    public UserResponse me() {
-//        var authentication = SecurityContextHolder.getContext().getAuthentication();
-//        log.info("username {}",authentication.getName());
-//        authentication.getAuthorities().forEach(authority -> log.info(authority.getAuthority()));
-//        String username = authentication.getName();
-//        return userService.getMe(username); // subject = sub trong token
-//    }
 
     @PostMapping
-    public ApiResponse<UserResponse> createUser(@RequestBody User user){
+    public ApiResponse<UserResponse> createUser(@RequestBody @Valid CreateUserRequest user){
         return ApiResponse.<UserResponse>builder()
                 .code(200)
                 .message("Success")
@@ -45,5 +57,31 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/me")
+    public ApiResponse<UserResponse> getCurrentUser(){
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .message("Success")
+                .result(userService.getMe())
+                .build();
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<UserResponse> updateUser(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest user){
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .message("Success")
+                .result(userService.update(id,user))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void>  deleteUser(@PathVariable Long id){
+        userService.deleteById(id);
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("Success")
+                .build();
+    }
 
 }
