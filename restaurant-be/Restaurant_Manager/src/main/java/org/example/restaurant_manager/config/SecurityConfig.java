@@ -1,5 +1,6 @@
 package org.example.restaurant_manager.config;
 
+import org.example.restaurant_manager.enums.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,12 @@ public class SecurityConfig {
             "/error"
     };
 
+        private static final String[] ADMIN_ONLY_ENDPOINTS = {
+                        "/users",
+                        "/users/**",
+                        "/invoices/revenue/**"
+        };
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -30,6 +37,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers("/users/me").authenticated()
+                        .requestMatchers(ADMIN_ONLY_ENDPOINTS).hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/foods").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/foods/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/foods/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/foods/top-selling").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 );
         JwtGrantedAuthoritiesConverter gac = new JwtGrantedAuthoritiesConverter();

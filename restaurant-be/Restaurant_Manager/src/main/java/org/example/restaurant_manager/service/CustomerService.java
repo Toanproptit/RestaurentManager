@@ -1,17 +1,19 @@
 package org.example.restaurant_manager.service;
 
 
-import jakarta.transaction.Transactional;
+import java.util.List;
+
+import org.example.restaurant_manager.dto.request.CreateCustomerRequest;
+import org.example.restaurant_manager.dto.request.UpdateCustomerRequest;
 import org.example.restaurant_manager.dto.response.CustomerResponse;
-import org.example.restaurant_manager.mapper.CustomerMapper;
 import org.example.restaurant_manager.entity.Customer;
-import org.example.restaurant_manager.entity.Reservation;
+import org.example.restaurant_manager.enums.ErrorCode;
+import org.example.restaurant_manager.exception.AppException;
+import org.example.restaurant_manager.mapper.CustomerMapper;
 import org.example.restaurant_manager.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import jakarta.transaction.Transactional;
 
 @Service
 public class CustomerService {
@@ -36,15 +38,12 @@ public class CustomerService {
         return customerMapper.toCustomerResponse(getEntity(id));
     }
 
-    public CustomerResponse create(Customer customer){
-
-        Set<Reservation> reservations = customer.getReservations();
-
-        customer.setReservations(new HashSet<>());
-
-        if(reservations != null){
-            reservations.forEach(customer::addReservation);
-        }
+    public CustomerResponse create(CreateCustomerRequest request){
+        Customer customer = new Customer();
+        customer.setName(request.getName());
+        customer.setEmail(request.getEmail());
+        customer.setPhone(request.getPhone());
+        customer.setAddress(request.getAddress());
 
         return customerMapper.toCustomerResponse(
                 customerRepository.save(customer)
@@ -52,13 +51,21 @@ public class CustomerService {
     }
 
     @Transactional
-    public CustomerResponse update(Long id, Customer newCustomer){
+    public CustomerResponse update(Long id, UpdateCustomerRequest newCustomer){
         Customer oldCustomer = getEntity(id);
 
-        oldCustomer.setName(newCustomer.getName());
-        oldCustomer.setAddress(newCustomer.getAddress());
-        oldCustomer.setEmail(newCustomer.getEmail());
-        oldCustomer.setPhone(newCustomer.getPhone());
+        if (newCustomer.getName() != null) {
+            oldCustomer.setName(newCustomer.getName());
+        }
+        if (newCustomer.getAddress() != null) {
+            oldCustomer.setAddress(newCustomer.getAddress());
+        }
+        if (newCustomer.getEmail() != null) {
+            oldCustomer.setEmail(newCustomer.getEmail());
+        }
+        if (newCustomer.getPhone() != null) {
+            oldCustomer.setPhone(newCustomer.getPhone());
+        }
 
         return customerMapper.toCustomerResponse(oldCustomer);
     }
@@ -70,6 +77,6 @@ public class CustomerService {
 
     private Customer getEntity(Long id){
         return customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.CUSTOMER_NOT_FOUND));
     }
 }

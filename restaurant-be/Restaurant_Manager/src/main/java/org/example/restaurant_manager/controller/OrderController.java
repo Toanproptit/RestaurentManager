@@ -1,12 +1,22 @@
 package org.example.restaurant_manager.controller;
 
+import java.util.List;
+
+import org.example.restaurant_manager.dto.request.CreateOrderRequest;
+import org.example.restaurant_manager.dto.request.UpdateOrderRequest;
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.OrderResponse;
-import org.example.restaurant_manager.entity.Order;
 import org.example.restaurant_manager.service.OrderService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/orders")
@@ -20,7 +30,7 @@ public class OrderController {
 
 
     @PostMapping
-    public ApiResponse<OrderResponse> create(@RequestBody Order order) {
+    public ApiResponse<OrderResponse> create(@RequestBody @Valid CreateOrderRequest order) {
 
         return ApiResponse.<OrderResponse>builder()
                 .code(200)
@@ -55,7 +65,7 @@ public class OrderController {
     @PutMapping("/{id}")
     public ApiResponse<OrderResponse> update(
             @PathVariable Long id,
-            @RequestBody Order order) {
+            @RequestBody @Valid UpdateOrderRequest order) {
 
         return ApiResponse.<OrderResponse>builder()
                 .code(200)

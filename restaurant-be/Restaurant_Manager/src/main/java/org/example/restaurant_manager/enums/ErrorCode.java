@@ -1,11 +1,12 @@
 package org.example.restaurant_manager.enums;
 
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -30,15 +31,36 @@ public enum ErrorCode {
     UPDATE_INFO_ERROR(1016, "Cannot update info", HttpStatus.BAD_REQUEST),
     USERNAME_EXISTED(1017, "Username existed", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED(1018, "Email existed", HttpStatus.BAD_REQUEST),
+    FOOD_NOT_FOUND(1019, "Food not found", HttpStatus.NOT_FOUND),
+    CUSTOMER_NOT_FOUND(1020, "Customer not found", HttpStatus.NOT_FOUND),
+    DINING_TABLE_NOT_FOUND(1021, "Dining table not found", HttpStatus.NOT_FOUND),
+    ORDER_NOT_FOUND(1022, "Order not found", HttpStatus.NOT_FOUND),
+    ORDER_DETAIL_NOT_FOUND(1023, "Order detail not found", HttpStatus.NOT_FOUND),
+    INVOICE_ALREADY_EXISTS(1024, "Order already has an invoice", HttpStatus.BAD_REQUEST),
+    RESERVATION_DETAIL_NOT_FOUND(1025, "Reservation detail not found", HttpStatus.NOT_FOUND),
+    RESERVATION_NOT_FOUND(1026, "Reservation not found", HttpStatus.NOT_FOUND),
+    TOKEN_GENERATION_FAILED(1027, "Cannot create token", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
-    int code;
-    String message;
-    HttpStatusCode statusCode;
+    final int code;
+    final String message;
+    final HttpStatusCode statusCode;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;
         this.statusCode = statusCode;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public HttpStatusCode getStatusCode() {
+        return statusCode;
     }
 }
