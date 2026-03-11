@@ -1,13 +1,28 @@
 package org.example.restaurant_manager.entity;
 
 
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.example.restaurant_manager.enums.OrderStatus;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.restaurant_manager.enums.OrderStatus;
-
-import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -38,9 +53,7 @@ public class Order {
 
     @OneToMany(
             mappedBy = "order",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+        fetch = FetchType.LAZY
     )
     private Set<DiningTable>  diningTables = new HashSet<>();
 

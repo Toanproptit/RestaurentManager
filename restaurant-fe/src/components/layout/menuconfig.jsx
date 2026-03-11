@@ -4,6 +4,7 @@ import {
   faBagShopping,
   faChartColumn,
   faClock,
+  faTableCellsLarge,
   faUser,
   faUtensils,
   faTruck,
@@ -70,6 +71,11 @@ export const menuconfig = {
       label: "Menu",
       path: "menu",
       icon: faUtensils,
+    },
+    {
+      label: "Tables",
+      path: "tables",
+      icon: faTableCellsLarge,
     },
     {
       label: "Reports",

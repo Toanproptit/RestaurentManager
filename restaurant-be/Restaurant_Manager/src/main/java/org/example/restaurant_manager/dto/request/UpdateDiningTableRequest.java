@@ -9,4 +9,6 @@ public class UpdateDiningTableRequest {
     private Integer maxGuests;
     private Long reservationDetailId;
     private Long orderId;
+    private Boolean clearReservationDetail;
+    private Boolean clearOrder;
 }

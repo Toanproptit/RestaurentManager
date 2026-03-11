@@ -1,13 +1,19 @@
 package org.example.restaurant_manager.entity;
 
 
-import jakarta.persistence.*;
+import java.util.Date;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Date;
 
 @Getter
 @Setter
@@ -28,8 +34,13 @@ public class Invoice {
     private Order order;
 
     public void attachOrder(Order order) {
+        if (this.order != null && this.order != order) {
+            this.order.setInvoice(null);
+        }
+
         this.order = order;
-        if(order!=null && order.getInvoice()!=null) {
+
+        if (order != null) {
             order.setInvoice(this);
         }
     }

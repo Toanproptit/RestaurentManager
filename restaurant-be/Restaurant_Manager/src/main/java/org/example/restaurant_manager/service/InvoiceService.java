@@ -14,6 +14,7 @@ import org.example.restaurant_manager.repository.InvoiceRepository;
 import org.example.restaurant_manager.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -25,6 +26,7 @@ public class InvoiceService {
     private final InvoiceMapper invoiceMapper;
 
 
+    @Transactional
     public InvoiceResponse createInvoice(Long orderId, CreateInvoiceRequest request) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
@@ -35,7 +37,7 @@ public class InvoiceService {
 
         Invoice invoice = new Invoice();
         invoice.setDate(request.getDate());
-        invoice.setTotal(request.getTotal());
+    invoice.setTotal(resolveInvoiceTotal(order));
 
         invoice.attachOrder(order);
 
@@ -54,5 +56,10 @@ public class InvoiceService {
 
     public List<RevenueStatisticsResponse> getRevenueByYear() {
         return invoiceRepository.getRevenueByYear();
+    }
+
+    private double resolveInvoiceTotal(Order order) {
+        Long totalAmount = order.getTotalAmount();
+        return totalAmount != null ? totalAmount.doubleValue() : 0D;
     }
 }

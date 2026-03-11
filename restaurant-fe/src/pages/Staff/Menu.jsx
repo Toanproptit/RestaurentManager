@@ -11,26 +11,9 @@ export default function StaffMenuView() {
         {mockMenus.map((item) => (
           <div key={item.id} className="staff-card">
             <div>
-              {item.image && (
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  width="80"
-                  style={{ borderRadius: "8px", marginBottom: "10px" }}
-                />
-              )}
-
               <h3>{item.name}</h3>
+              <p>{item.description}</p>
               <p>{Number(item.price).toLocaleString()} VND</p>
-              <p>{item.category}</p>
-
-              <span
-                className={`status ${
-                  item.status === "Available" ? "active" : "inactive"
-                }`}
-              >
-                {item.status}
-              </span>
             </div>
           </div>
         ))}

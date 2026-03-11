@@ -10,7 +10,9 @@ export default function StaffLayout(){
                 <Sidebar role="staff"/>
                 <div className="app-main">
                     <Header/>
-                    <Outlet/>
+                    <div className="content">
+                        <Outlet/>
+                    </div>
                 </div>
             </div>
         </>

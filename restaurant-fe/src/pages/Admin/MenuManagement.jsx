@@ -9,10 +9,8 @@ export default function MenuManagement() {
 
   const [newItem, setNewItem] = useState({
     name: "",
+    description: "",
     price: "",
-    category: "",
-    image: "",
-    status: "Available",
   });
 
   // =========================
@@ -24,7 +22,11 @@ export default function MenuManagement() {
       setMenus(
         menus.map((item) =>
           item.id === editingItem.id
-            ? { ...newItem, id: editingItem.id }
+            ? {
+                ...newItem,
+                id: editingItem.id,
+                price: Number(newItem.price),
+              }
             : item
         )
       );
@@ -33,6 +35,7 @@ export default function MenuManagement() {
       const itemToAdd = {
         id: Date.now().toString(),
         ...newItem,
+        price: Number(newItem.price),
       };
       setMenus([...menus, itemToAdd]);
     }
@@ -42,10 +45,8 @@ export default function MenuManagement() {
 
     setNewItem({
       name: "",
+      description: "",
       price: "",
-      category: "",
-      image: "",
-      status: "Available",
     });
   };
 
@@ -87,26 +88,9 @@ export default function MenuManagement() {
         {menus.map((item) => (
           <div key={item.id} className="staff-card">
             <div>
-              {item.image && (
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  width="80"
-                  style={{ borderRadius: "8px", marginBottom: "10px" }}
-                />
-              )}
-
               <h3>{item.name}</h3>
+              <p>{item.description}</p>
               <p>{Number(item.price).toLocaleString()} VND</p>
-              <p>{item.category}</p>
-
-              <span
-                className={`status ${
-                  item.status === "Available" ? "active" : "inactive"
-                }`}
-              >
-                {item.status}
-              </span>
             </div>
 
             {/* ACTION BUTTONS */}
@@ -145,19 +129,12 @@ export default function MenuManagement() {
               }
             />
 
-            <input
-              placeholder="Category"
-              value={newItem.category}
+            <textarea
+              placeholder="Description"
+              rows="3"
+              value={newItem.description}
               onChange={(e) =>
-                setNewItem({ ...newItem, category: e.target.value })
-              }
-            />
-
-            <input
-              placeholder="Image URL"
-              value={newItem.image}
-              onChange={(e) =>
-                setNewItem({ ...newItem, image: e.target.value })
+                setNewItem({ ...newItem, description: e.target.value })
               }
             />
 

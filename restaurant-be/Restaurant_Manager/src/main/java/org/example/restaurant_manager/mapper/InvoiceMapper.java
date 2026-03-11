@@ -7,6 +7,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class InvoiceMapper {
     public InvoiceResponse toInvoiceResponse(Invoice invoice) {
-        return new InvoiceResponse(invoice.getDate(), invoice.getTotal());
+        Long orderId = invoice.getOrder() != null ? invoice.getOrder().getId() : null;
+
+        return new InvoiceResponse(
+                invoice.getId(),
+                orderId,
+                invoice.getDate(),
+                invoice.getTotal()
+        );
     }
 }
