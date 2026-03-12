@@ -9,23 +9,23 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
     @Query("SELECT new org.example.restaurant_manager.dto.response.RevenueStatisticsResponse(" +
-	    "FUNCTION('YEAR', i.date), FUNCTION('MONTH', i.date), FUNCTION('DAY', i.date), SUM(i.total)) " +
+	    "YEAR(i.date), MONTH(i.date), DAY(i.date), SUM(i.total)) " +
 	    "FROM Invoice i " +
-	    "GROUP BY FUNCTION('YEAR', i.date), FUNCTION('MONTH', i.date), FUNCTION('DAY', i.date) " +
-	    "ORDER BY FUNCTION('YEAR', i.date) DESC, FUNCTION('MONTH', i.date) DESC, FUNCTION('DAY', i.date) DESC")
+	    "GROUP BY YEAR(i.date), MONTH(i.date), DAY(i.date) " +
+	    "ORDER BY YEAR(i.date) DESC, MONTH(i.date) DESC, DAY(i.date) DESC")
 	List<RevenueStatisticsResponse> getRevenueByDay();
 
     @Query("SELECT new org.example.restaurant_manager.dto.response.RevenueStatisticsResponse(" +
-	    "FUNCTION('YEAR', i.date), FUNCTION('MONTH', i.date), SUM(i.total)) " +
+	    "YEAR(i.date), MONTH(i.date), SUM(i.total)) " +
 	    "FROM Invoice i " +
-	    "GROUP BY FUNCTION('YEAR', i.date), FUNCTION('MONTH', i.date) " +
-	    "ORDER BY FUNCTION('YEAR', i.date) DESC, FUNCTION('MONTH', i.date) DESC")
+	    "GROUP BY YEAR(i.date), MONTH(i.date) " +
+	    "ORDER BY YEAR(i.date) DESC, MONTH(i.date) DESC")
 	List<RevenueStatisticsResponse> getRevenueByMonth();
 
     @Query("SELECT new org.example.restaurant_manager.dto.response.RevenueStatisticsResponse(" +
-	    "FUNCTION('YEAR', i.date), SUM(i.total)) " +
+	    "YEAR(i.date), SUM(i.total)) " +
 	    "FROM Invoice i " +
-	    "GROUP BY FUNCTION('YEAR', i.date) " +
-	    "ORDER BY FUNCTION('YEAR', i.date) DESC")
+	    "GROUP BY YEAR(i.date) " +
+	    "ORDER BY YEAR(i.date) DESC")
 	List<RevenueStatisticsResponse> getRevenueByYear();
 }

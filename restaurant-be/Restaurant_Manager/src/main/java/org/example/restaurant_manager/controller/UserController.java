@@ -1,10 +1,9 @@
 package org.example.restaurant_manager.controller;
 
-import java.util.List;
-
 import org.example.restaurant_manager.dto.request.CreateUserRequest;
 import org.example.restaurant_manager.dto.request.UpdateUserRequest;
 import org.example.restaurant_manager.dto.response.ApiResponse;
+import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.dto.response.UserResponse;
 import org.example.restaurant_manager.service.UserService;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -28,11 +28,14 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ApiResponse<List<UserResponse>> getUsers() {
-        return ApiResponse.<List<UserResponse>>builder()
+    public ApiResponse<PageResponse<UserResponse>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<UserResponse>>builder()
                 .code(200)
                 .message("Success")
-                .result(userService.findAll())
+                .result(userService.findAll(page, size))
                 .build();
     }
 

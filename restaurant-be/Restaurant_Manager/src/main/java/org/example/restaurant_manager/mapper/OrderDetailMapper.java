@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderDetailMapper {
     public OrderDetailResponse toOrderDetailResponse(OrderDetail orderDetail){
-        return new OrderDetailResponse(orderDetail.getId(), orderDetail.getId(), orderDetail.getQuantity(), orderDetail.getPrice());
+        Long orderId = orderDetail.getOrder() != null ? orderDetail.getOrder().getId() : null;
+        Long foodId = orderDetail.getFood() != null ? orderDetail.getFood().getId() : null;
+
+        return new OrderDetailResponse(orderId, foodId, orderDetail.getQuantity(), orderDetail.getPrice());
     }
 }

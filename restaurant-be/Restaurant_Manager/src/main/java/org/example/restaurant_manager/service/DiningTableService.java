@@ -5,6 +5,7 @@ import java.util.List;
 import org.example.restaurant_manager.dto.request.CreateDiningTableRequest;
 import org.example.restaurant_manager.dto.request.UpdateDiningTableRequest;
 import org.example.restaurant_manager.dto.response.DiningTableResponse;
+import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.entity.DiningTable;
 import org.example.restaurant_manager.entity.Order;
 import org.example.restaurant_manager.entity.ReservationDetail;
@@ -14,6 +15,9 @@ import org.example.restaurant_manager.mapper.DiningTableMapper;
 import org.example.restaurant_manager.repository.DiningTableRepository;
 import org.example.restaurant_manager.repository.OrderRepository;
 import org.example.restaurant_manager.repository.ReservationDetailRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -36,11 +40,35 @@ public class DiningTableService {
         this.orderRepository = orderRepository;
     }
 
-    public List<DiningTableResponse> findAll() {
-        return diningTableRepository.findAll()
-                .stream()
-                .map(diningTableMapper::toDiningTableResponse)
-                .toList();
+//    public List<DiningTableResponse> findAll() {
+//        return diningTableRepository.findAll()
+//                .stream()
+//                .map(diningTableMapper::toDiningTableResponse)
+//                .toList();
+//    }
+
+
+    public PageResponse<DiningTableResponse> findAll(int page , int size) {
+        int validatedPage = Math.max(0,page);
+        int validatedSize = size <= 0 ? 10: Math.min(size, 100);
+
+        Page<DiningTable> tablePage = diningTableRepository.findAll(
+                PageRequest.of(validatedPage, validatedSize, Sort.by(Sort.Direction.ASC, "id"))
+        );
+
+        List<DiningTableResponse> content =
+                tablePage.getContent()
+                        .stream()
+                        .map(diningTableMapper:: toDiningTableResponse).toList();
+        return PageResponse.<DiningTableResponse>builder()
+                .content(content)
+                .page(page)
+                .size(size)
+                .totalElements(tablePage.getTotalElements())
+                .totalPages(tablePage.getTotalPages())
+                .first(tablePage.isFirst())
+                .last(tablePage.isLast())
+                .build();
     }
 
     public DiningTableResponse findById(Long id) {

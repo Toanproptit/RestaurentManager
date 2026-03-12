@@ -40,6 +40,7 @@ public enum ErrorCode {
     RESERVATION_DETAIL_NOT_FOUND(1025, "Reservation detail not found", HttpStatus.NOT_FOUND),
     RESERVATION_NOT_FOUND(1026, "Reservation not found", HttpStatus.NOT_FOUND),
     TOKEN_GENERATION_FAILED(1027, "Cannot create token", HttpStatus.INTERNAL_SERVER_ERROR),
+    FOOD_ID_REQUIRED(1028, "Food id is required", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

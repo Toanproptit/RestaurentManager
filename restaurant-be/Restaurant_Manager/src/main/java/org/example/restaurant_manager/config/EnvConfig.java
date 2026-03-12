@@ -1,4 +1,4 @@
-package org.example.restaurant_manager;
+package org.example.restaurant_manager.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.annotation.Configuration;

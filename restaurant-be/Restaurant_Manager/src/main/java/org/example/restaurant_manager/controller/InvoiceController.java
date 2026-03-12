@@ -1,7 +1,6 @@
 package org.example.restaurant_manager.controller;
 
 import java.util.List;
-
 import org.example.restaurant_manager.dto.request.CreateInvoiceRequest;
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.InvoiceResponse;

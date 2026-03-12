@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.example.restaurant_manager.dto.request.CreateUserRequest;
 import org.example.restaurant_manager.dto.request.UpdateUserRequest;
+import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.dto.response.UserResponse;
 import org.example.restaurant_manager.entity.User;
 import org.example.restaurant_manager.enums.ErrorCode;
@@ -12,6 +13,9 @@ import org.example.restaurant_manager.enums.Role;
 import org.example.restaurant_manager.exception.AppException;
 import org.example.restaurant_manager.mapper.UserMapper;
 import org.example.restaurant_manager.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,10 +60,31 @@ public class UserService {
         return userMapper.toUserResponse(getUser(id));
     }
 
-    public List<UserResponse> findAll(){
+    public PageResponse<UserResponse> findAll(int page, int size){
         log.info("Find All Users");
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+        int validatedPage = Math.max(page, 0);
+        int validatedSize = size <= 0 ? 10 : Math.min(size, 100);
+
+        Page<User> userPage = userRepository.findAll(
+                PageRequest.of(validatedPage, validatedSize, Sort.by(Sort.Direction.ASC, "id"))
+        );
+
+        List<UserResponse> content = userPage.getContent()
+                .stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+
+        return PageResponse.<UserResponse>builder()
+                .content(content)
+                .page(userPage.getNumber())
+                .size(userPage.getSize())
+                .totalElements(userPage.getTotalElements())
+                .totalPages(userPage.getTotalPages())
+                .first(userPage.isFirst())
+                .last(userPage.isLast())
+                .build();
     }
+
     public UserResponse getMe(String nameFromToken) throws AppException {
         User user = userRepository.findByName(nameFromToken)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
