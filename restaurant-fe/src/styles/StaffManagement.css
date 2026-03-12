@@ -11,6 +11,19 @@
   color: #0f172a;
 }
 
+.staff-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.staff-toolbar p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
 /* ===== LIST ===== */
 .staff-list {
   display: grid;
@@ -82,6 +95,48 @@
 
 .staff-card button:hover {
   background-color: #16a34a;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pagination-button {
+  min-width: 40px;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.pagination-button:hover:not(:disabled) {
+  border-color: #22c55e;
+  color: #16a34a;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-button.active-page {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #ffffff;
 }
 
 .modal-overlay {

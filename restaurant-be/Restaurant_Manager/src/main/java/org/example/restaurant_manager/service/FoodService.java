@@ -5,13 +5,16 @@ import java.util.List;
 import org.example.restaurant_manager.dto.request.CreateFoodRequest;
 import org.example.restaurant_manager.dto.request.UpdateFoodRequest;
 import org.example.restaurant_manager.dto.response.FoodResponse;
+import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.dto.response.TopSellingFoodResponse;
 import org.example.restaurant_manager.entity.Food;
 import org.example.restaurant_manager.enums.ErrorCode;
 import org.example.restaurant_manager.exception.AppException;
 import org.example.restaurant_manager.mapper.FoodMapper;
 import org.example.restaurant_manager.repository.FoodRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -25,8 +28,34 @@ public class FoodService {
         this.foodMapper = foodMapper;
     }
 
-    public List<FoodResponse> findAll(){
-        return foodRepository.findAll().stream().map(foodMapper::toFoodResponse).toList();
+//    public List<FoodResponse> findAll(){
+//        return foodRepository.findAll().stream().map(foodMapper::toFoodResponse).toList();
+//    }
+
+    public PageResponse<FoodResponse> findAll(int page, int size) {
+        int ValidatedPage = page;
+        int ValidatedSize = size;
+
+        Page<Food> foodPage = foodRepository.findAll(
+                PageRequest.of(ValidatedPage, ValidatedSize, Sort.by("name").descending())
+        );
+
+        List<FoodResponse> foods =
+                foodPage.getContent()
+                        .stream()
+                        .map(foodMapper :: toFoodResponse)
+                        .toList();
+
+        return PageResponse.<FoodResponse>builder()
+                .content(foods)
+                .page(page)
+                .size(size)
+                .totalElements(foodPage.getTotalElements())
+                .totalPages(foodPage.getTotalPages())
+                .first(foodPage.isFirst())
+                .last(foodPage.isLast())
+                .build();
+
     }
 
     public List<TopSellingFoodResponse> getTopSellingFoods() {

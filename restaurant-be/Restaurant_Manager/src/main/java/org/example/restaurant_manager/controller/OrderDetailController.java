@@ -31,8 +31,8 @@ public class OrderDetailController {
 
     @PostMapping
     public ApiResponse<OrderDetailResponse> create(
-            @PathVariable Long orderId,
-            @RequestParam Long foodId,
+            @PathVariable("orderId") Long orderId,
+            @RequestParam(required = false) Long foodId,
             @RequestBody @Valid CreateOrderDetailRequest orderDetail) {
 
         return ApiResponse.<OrderDetailResponse>builder()

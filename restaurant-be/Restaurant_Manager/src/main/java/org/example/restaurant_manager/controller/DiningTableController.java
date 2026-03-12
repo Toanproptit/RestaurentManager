@@ -6,15 +6,9 @@ import org.example.restaurant_manager.dto.request.CreateDiningTableRequest;
 import org.example.restaurant_manager.dto.request.UpdateDiningTableRequest;
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.DiningTableResponse;
+import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.service.DiningTableService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
@@ -29,11 +23,14 @@ public class DiningTableController {
     }
 
     @GetMapping
-    public ApiResponse<List<DiningTableResponse>> getAll() {
-        return ApiResponse.<List<DiningTableResponse>>builder()
+    public ApiResponse<PageResponse<DiningTableResponse>> getAll(
+            @RequestParam (defaultValue = "0") int page ,
+            @RequestParam (defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<DiningTableResponse>>builder()
                 .code(200)
                 .message("success")
-                .result(diningTableService.findAll())
+                .result(diningTableService.findAll(page,size))
                 .build();
     }
 

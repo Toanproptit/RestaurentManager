@@ -9,7 +9,17 @@ h1 {
 }
 
 .toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
   margin-bottom: 15px;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 button {
@@ -23,6 +33,20 @@ button {
 
 button:hover {
   background: #27ae60;
+}
+
+.filter-group button {
+  background: #dfe6e9;
+  color: #2d3436;
+}9
+
+.filter-group button:hover {
+  background: #bfc8cb;
+}
+
+.filter-group button.active {
+  background: #27ae60;
+  color: white;
 }
 
 .activity-list {

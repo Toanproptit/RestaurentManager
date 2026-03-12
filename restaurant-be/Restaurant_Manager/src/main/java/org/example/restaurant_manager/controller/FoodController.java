@@ -7,16 +7,10 @@ import org.example.restaurant_manager.dto.request.CreateFoodRequest;
 import org.example.restaurant_manager.dto.request.UpdateFoodRequest;
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.FoodResponse;
+import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.dto.response.TopSellingFoodResponse;
 import org.example.restaurant_manager.service.FoodService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
@@ -30,11 +24,14 @@ public class FoodController {
     }
 
     @GetMapping
-    public ApiResponse<List<FoodResponse>> getFoods(){
-        return ApiResponse.<List<FoodResponse>>builder()
+    public ApiResponse<PageResponse<FoodResponse>> getFoods(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ApiResponse.<PageResponse<FoodResponse>>builder()
                 .code(200)
                 .message("success")
-                .result(foodService.findAll())
+                .result(foodService.findAll(page,size))
                 .build();
     }
 

@@ -36,7 +36,13 @@ public class OrderDetailService {
     }
 
         public OrderDetailResponse create(CreateOrderDetailRequest request, Long orderId, Long foodId) {
-        Food food = foodRepository.findById(foodId)
+        Long resolvedFoodId = foodId != null ? foodId : request.getFoodId();
+
+        if (resolvedFoodId == null) {
+            throw new AppException(ErrorCode.FOOD_ID_REQUIRED);
+        }
+
+        Food food = foodRepository.findById(resolvedFoodId)
             .orElseThrow(() -> new AppException(ErrorCode.FOOD_NOT_FOUND));
 
         Order order = orderRepository.findById(orderId)

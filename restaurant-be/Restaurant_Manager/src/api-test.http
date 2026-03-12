@@ -49,3 +49,13 @@ Authorization: Bearer {{token}}
 ### Top 5 selling foods
 GET {{baseUrl}}/foods/top-selling
 Authorization: Bearer {{token}}
+
+### Create order detail
+POST {{baseUrl}}/orders/1/details
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "foodId": 1,
+  "quantity": 2
+}
