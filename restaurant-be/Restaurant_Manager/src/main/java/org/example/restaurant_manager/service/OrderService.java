@@ -9,6 +9,7 @@ import java.util.Set;
 import org.example.restaurant_manager.dto.request.CreateOrderRequest;
 import org.example.restaurant_manager.dto.request.UpdateOrderRequest;
 import org.example.restaurant_manager.dto.response.OrderResponse;
+import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.entity.DiningTable;
 import org.example.restaurant_manager.entity.Order;
 import org.example.restaurant_manager.enums.ErrorCode;
@@ -17,6 +18,9 @@ import org.example.restaurant_manager.exception.AppException;
 import org.example.restaurant_manager.mapper.OrderMapper;
 import org.example.restaurant_manager.repository.DiningTableRepository;
 import org.example.restaurant_manager.repository.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -56,11 +60,34 @@ public class OrderService {
         return orderMapper.toOrderResponse(savedOrder);
     }
 
-    public List<OrderResponse> getAll() {
-        return orderRepository.findAll()
-                .stream()
-                .map(orderMapper::toOrderResponse)
-                .toList();
+//    public List<OrderResponse> getAll() {
+//        return orderRepository.findAll()
+//                .stream()
+//                .map(orderMapper::toOrderResponse)
+//                .toList();
+//    }
+
+    public PageResponse<OrderResponse> findAll(int page, int size) {
+
+        int validatedPage = page;
+        int validatedSize = size;
+
+        Page<Order> oldpage = orderRepository
+                .findAll(PageRequest.of(validatedPage, validatedSize, Sort.by("id").descending()));
+
+        List<OrderResponse> content = oldpage.stream().map(orderMapper :: toOrderResponse).toList();
+
+        return PageResponse.<OrderResponse>builder()
+                .content(content)
+                .size(size)
+                .page(page)
+                .totalElements(oldpage.getTotalElements())
+                .totalPages(oldpage.getTotalPages())
+                .first(oldpage.isFirst())
+                .last(oldpage.isLast())
+                .build();
+
+
     }
 
     public OrderResponse getById(Long id) {

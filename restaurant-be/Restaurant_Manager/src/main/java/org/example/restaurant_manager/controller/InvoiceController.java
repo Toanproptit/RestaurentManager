@@ -31,30 +31,5 @@ public class InvoiceController {
         return invoiceService.createInvoice(orderId, invoice);
     }
 
-    @GetMapping("/revenue/daily")
-    public ApiResponse<List<RevenueStatisticsResponse>> getRevenueByDay() {
-        return ApiResponse.<List<RevenueStatisticsResponse>>builder()
-                .code(200)
-                .message("success")
-                .result(invoiceService.getRevenueByDay())
-                .build();
-    }
 
-    @GetMapping("/revenue/monthly")
-    public ApiResponse<List<RevenueStatisticsResponse>> getRevenueByMonth() {
-        return ApiResponse.<List<RevenueStatisticsResponse>>builder()
-                .code(200)
-                .message("success")
-                .result(invoiceService.getRevenueByMonth())
-                .build();
-    }
-
-    @GetMapping("/revenue/yearly")
-    public ApiResponse<List<RevenueStatisticsResponse>> getRevenueByYear() {
-        return ApiResponse.<List<RevenueStatisticsResponse>>builder()
-                .code(200)
-                .message("success")
-                .result(invoiceService.getRevenueByYear())
-                .build();
-    }
 }

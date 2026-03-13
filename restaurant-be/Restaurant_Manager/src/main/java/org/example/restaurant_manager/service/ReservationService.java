@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.example.restaurant_manager.dto.request.CreateReservationRequest;
 import org.example.restaurant_manager.dto.request.UpdateReservationRequest;
+import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.dto.response.ReservationResponse;
 import org.example.restaurant_manager.entity.Customer;
 import org.example.restaurant_manager.entity.Reservation;
@@ -12,6 +13,9 @@ import org.example.restaurant_manager.exception.AppException;
 import org.example.restaurant_manager.mapper.ReservationMapper;
 import org.example.restaurant_manager.repository.CustomerRepository;
 import org.example.restaurant_manager.repository.ReservationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -31,11 +35,30 @@ public class ReservationService {
         this.customerRepository = customerRepository;
     }
 
-    public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll()
-                .stream()
-                .map(reservationMapper::toReservationResponse)
-                .toList();
+//    public List<ReservationResponse> findAll() {
+//        return reservationRepository.findAll()
+//                .stream()
+//                .map(reservationMapper::toReservationResponse)
+//                .toList();
+//    }
+
+    public PageResponse<ReservationResponse> findAll(int page, int size){
+        int validatedPage = page < 0 ? 0 : page;
+        int validatedSize = size < 0 ? 0 : size;
+
+        Page<Reservation> oldPage = reservationRepository.findAll(
+                PageRequest.of(validatedPage, validatedSize, Sort.by(Sort.Direction.ASC, "id"))
+        );
+
+        List<ReservationResponse> content = oldPage.
+                stream().map(reservationMapper::toReservationResponse).toList();
+        return PageResponse.<ReservationResponse>builder()
+                .content(content)
+                .page(page)
+                .size(size)
+                .totalElements(oldPage.getTotalElements())
+                .totalPages(oldPage.getTotalPages())
+                .build();
     }
 
     public ReservationResponse findById(Long id) {

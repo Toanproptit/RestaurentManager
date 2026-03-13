@@ -46,6 +46,14 @@ public class InvoiceService {
         return invoiceMapper.toInvoiceResponse(savedInvoice);
     }
 
+    public InvoiceResponse getInvoice(Long orderId) {
+        if(orderRepository.findById(orderId).isEmpty()) {
+            throw new AppException(ErrorCode.ORDER_NOT_FOUND);
+        }
+        Invoice invoice = invoiceRepository.findById(orderId).get();
+        return invoiceMapper.toInvoiceResponse(invoice);
+    }
+
     public List<RevenueStatisticsResponse> getRevenueByDay() {
         return invoiceRepository.getRevenueByDay();
     }
