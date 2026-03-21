@@ -32,7 +32,7 @@ public class OrderDetailController {
     @PostMapping
     public ApiResponse<OrderDetailResponse> create(
             @PathVariable("orderId") Long orderId,
-            @RequestParam(required = false) Long foodId,
+            @RequestParam(required = false) Long foodId,    
             @RequestBody @Valid CreateOrderDetailRequest orderDetail) {
 
         return ApiResponse.<OrderDetailResponse>builder()

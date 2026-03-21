@@ -1,5 +1,4 @@
 import React from "react";
-import { mockMenus } from "../../auth/MockMenu";
 import "../../styles/StaffManagement.css";
 
 export default function StaffMenuView() {

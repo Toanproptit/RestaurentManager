@@ -2,11 +2,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Staff/DashBoard";
-import Orders from "../pages/Staff/Orders";
+import Orders from "../pages/Staff/orders/Orders";
 import Customer from "../pages/Staff/Customer";
 import Delivery from "../pages/Staff/Delivery";
 import Reports from "../pages/Admin/Reports";
-import Reservation from "../pages/Staff/Reservation/Reservation";
+import ReservationPage from "../pages/ReservationPage";
+import ReservationCreatePage from "../pages/ReservationCreatePage";
+import ReservationDetailPage from "../pages/ReservationDetailPage";
 import StaffLayout from "../Layouts/StaffLayout";
 import AdminLayout from "../Layouts/AdminLayout";
 import Activity from "../pages/Staff/Histories";
@@ -28,7 +30,9 @@ function AppRouter() {
         <Route path="customers" element ={<Customer/>}/>
         <Route path="orders" element={<Orders />} />
         <Route path="delivery" element = {<Delivery/>}/>
-        <Route path="reservations" element ={<Reservation/>}/>
+        <Route path="reservations" element ={<ReservationPage/>}/>
+        <Route path="reservations/create" element ={<ReservationCreatePage/>}/>
+        <Route path="reservations/:reservationId/details" element ={<ReservationDetailPage/>}/>
         <Route path="histories" element={<Activity/>} />
         <Route path="menu" element = {<Menu/>}/>
       </Route>
@@ -39,7 +43,9 @@ function AppRouter() {
         <Route path="orders" element={<Orders />} />
         <Route path="delivery" element = {<Delivery/>}/>
         <Route path="reports" element = {<Reports/>}/>
-        <Route path="reservations" element ={<Reservation/>}/>
+        <Route path="reservations" element ={<ReservationPage/>}/>
+        <Route path="reservations/create" element ={<ReservationCreatePage/>}/>
+        <Route path="reservations/:reservationId/details" element ={<ReservationDetailPage/>}/>
         <Route path="histories" element={<Activity/>} />
         <Route path="staffs" element={<Staff />} />
         <Route path="menu" element = {<MenuManagement/>}/>

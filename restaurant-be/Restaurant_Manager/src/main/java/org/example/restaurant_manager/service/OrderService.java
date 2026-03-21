@@ -2,9 +2,7 @@ package org.example.restaurant_manager.service;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.example.restaurant_manager.dto.request.CreateOrderRequest;
 import org.example.restaurant_manager.dto.request.UpdateOrderRequest;
@@ -48,9 +46,8 @@ public class OrderService {
         order.setStatus(OrderStatus.PENDING);
         order.setOrderDate(new Date());
         order.setOrderDetails(new ArrayList<>());
-        order.setDiningTables(new HashSet<>());
 
-        replaceDiningTables(order, request.getDiningTableIds());
+        replaceDiningTable(order, request.getDiningTableId());
 
         order.setTotalAmount(calculateTotal(order));
 
@@ -104,11 +101,15 @@ public class OrderService {
             oldOrder.setStatus(newOrder.getStatus());
         }
 
-        if (newOrder.getDiningTableIds() != null) {
-            replaceDiningTables(oldOrder, newOrder.getDiningTableIds());
+        if (newOrder.getDiningTableId() != null) {
+            replaceDiningTable(oldOrder, newOrder.getDiningTableId());
         }
 
-        oldOrder.setTotalAmount(calculateTotal(oldOrder));
+        if (newOrder.getTotalAmount() != null) {
+            oldOrder.setTotalAmount(newOrder.getTotalAmount());
+        } else {
+            oldOrder.setTotalAmount(calculateTotal(oldOrder));
+        }
 
         return orderMapper.toOrderResponse(orderRepository.save(oldOrder));
     }
@@ -117,7 +118,7 @@ public class OrderService {
     public void delete(Long id) {
         Order order = getEntity(id);
 
-        new HashSet<>(order.getDiningTables()).forEach(order::removeDiningTable);
+        order.clearDiningTable();
 
         orderRepository.delete(order);
     }
@@ -135,23 +136,20 @@ public class OrderService {
                 .sum();
     }
 
-    private void replaceDiningTables(Order order, List<Long> diningTableIds) {
-        Set<DiningTable> currentTables = new HashSet<>(order.getDiningTables());
-        currentTables.forEach(order::removeDiningTable);
+    private void replaceDiningTable(Order order, Long diningTableId) {
+        order.clearDiningTable();
 
-        if (diningTableIds == null) {
+        if (diningTableId == null) {
             return;
         }
 
-        diningTableIds.stream()
-                .distinct()
-                .map(this::getDiningTable)
-                .forEach(diningTable -> {
-                    if (diningTable.getOrder() != null && diningTable.getOrder() != order) {
-                        diningTable.getOrder().getDiningTables().remove(diningTable);
-                    }
-                    order.addDiningTable(diningTable);
-                });
+        DiningTable diningTable = getDiningTable(diningTableId);
+
+        if (diningTable.getOrder() != null && diningTable.getOrder() != order) {
+            diningTable.getOrder().clearDiningTable();
+        }
+
+        order.assignDiningTable(diningTable);
     }
 
     private DiningTable getDiningTable(Long id) {

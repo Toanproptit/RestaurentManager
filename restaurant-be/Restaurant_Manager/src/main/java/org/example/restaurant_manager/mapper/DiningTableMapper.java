@@ -19,6 +19,8 @@ public class DiningTableMapper {
         diningTable.getName(),
         diningTable.getDescription(),
         diningTable.getMaxGuests(),
+        diningTable.getStatus(),
+        diningTable.getArea(),
         reservationDetailId,
         orderId
     );

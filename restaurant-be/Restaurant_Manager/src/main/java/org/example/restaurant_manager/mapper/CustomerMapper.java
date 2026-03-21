@@ -19,7 +19,7 @@ public class CustomerMapper {
 
 
     public CustomerResponse toCustomerResponse(Customer customer){
-        return new CustomerResponse(customer.getName(),customer.getEmail(),customer.getPhone(), customer.getAddress(), customer
+        return new CustomerResponse(customer.getId(), customer.getName(),customer.getEmail(),customer.getPhone(), customer.getAddress(), customer
                 .getReservations().stream().map(reservationSummaryMapper::reservationSummeryResponse).collect(Collectors.
                         toSet()));
     }

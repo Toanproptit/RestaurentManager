@@ -17,6 +17,5 @@ public class CreateReservationRequest {
     @NotNull(message = "End time is required")
     private LocalTime endTime;
 
-    @NotNull(message = "Customer is required")
     private Long customerId;
 }

@@ -2,7 +2,6 @@ package org.example.restaurant_manager.dto.response;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.example.restaurant_manager.enums.OrderStatus;
 
@@ -17,5 +16,5 @@ public class OrderResponse {
     private Long totalAmount;
     private Date orderDate;
     private List<OrderDetailResponse> orderDetails;
-    private Set<DiningTableResponse> diningTables;
+    private DiningTableResponse diningTable;
 }

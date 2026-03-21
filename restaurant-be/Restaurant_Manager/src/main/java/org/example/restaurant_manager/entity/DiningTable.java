@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,14 +29,15 @@ public class DiningTable {
     private String name;
     private String description;
     private int maxGuests;
-
+    private String status = "Available";
+    private String area;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_detail_id")
     private  ReservationDetail reservationDetail;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", unique = true)
     private Order order;
 
 }

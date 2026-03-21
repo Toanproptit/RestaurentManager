@@ -6,8 +6,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class OrderDetailResponse {
-    private Long idOrder;
-    private Long idFood;
+    private Long id;
+    private Long orderId;
+    private FoodResponse food;
     private Long quantity;
     private double price;
 }

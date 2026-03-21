@@ -1,36 +1,42 @@
 import { useState } from 'react'
 import LoginForm from '../components/auth/LoginForm'
 import { useNavigate } from 'react-router-dom'
-import { login } from '../auth/mock'
+import { loginApi } from '../service/authservice'
+import { jwtDecode } from 'jwt-decode'
 
 function Login() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const handleLogin = async (data) => {
-    console.log("Bắt đầu login", data)
-
+  const handleLogin = async ({ username, password }) => {
+    setError('')
     try {
-      const user = await login(data)
-      console.log("Login success", user)
+      console.log({ username, password })
+      const res = await loginApi({ username, password })
+      console.log("Đăng nhập thành công:", res.data)
 
-      localStorage.setItem('user', JSON.stringify(user))
-      console.log("Đã đăng nhập")
+      const token = res.data.result.token
+      // Lưu token vào localStorage
+      localStorage.setItem('token', token)
 
-      if (user.role === "ADMIN") {
-        navigate("/admin", { replace: true });
-      } else if (user.role === "STAFF") {
-        navigate("/staff", { replace: true });
+      // Giải mã JWT để lấy role
+      const decoded = jwtDecode(token)
+      console.log("Token payload:", decoded)
+      const role = decoded.scope
+
+      // Navigate theo role
+      if (role === 'ADMIN') {
+        navigate('/admin', { replace: true })
+      } else if (role === 'STAFF') {
+        navigate('/staff', { replace: true })
       } else {
-        // fallback an toàn
-        navigate("/login");
+        navigate('/', { replace: true })
       }
     } catch (err) {
-      console.error("Login fail:", err)
-      setError(err)
+      console.error("Đăng nhập thất bại:", err)
+      setError(err.response?.data?.message || 'Đăng nhập thất bại')
     }
   }
-
 
   return (
     <LoginForm onSubmit={handleLogin} error={error} />
