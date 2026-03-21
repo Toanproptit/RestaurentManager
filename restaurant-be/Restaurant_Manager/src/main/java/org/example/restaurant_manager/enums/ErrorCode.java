@@ -41,6 +41,10 @@ public enum ErrorCode {
     RESERVATION_NOT_FOUND(1026, "Reservation not found", HttpStatus.NOT_FOUND),
     TOKEN_GENERATION_FAILED(1027, "Cannot create token", HttpStatus.INTERNAL_SERVER_ERROR),
     FOOD_ID_REQUIRED(1028, "Food id is required", HttpStatus.BAD_REQUEST),
+    RESERVATION_CUSTOMER_REQUIRED(1029, "Customer is required when reservation is confirmed", HttpStatus.BAD_REQUEST),
+    RESERVATION_STATUS_INVALID(1030, "Invalid reservation status transition", HttpStatus.BAD_REQUEST),
+    RESERVATION_TABLE_REQUIRED_FOR_CHECK_IN(1031, "Reservation must have at least one assigned table before check-in", HttpStatus.BAD_REQUEST),
+    DATA_INTEGRITY_VIOLATION(1032, "Database data integrity violation", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

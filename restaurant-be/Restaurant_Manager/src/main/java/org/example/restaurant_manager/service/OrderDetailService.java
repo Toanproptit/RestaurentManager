@@ -17,6 +17,8 @@ import org.example.restaurant_manager.repository.OrderDetailRepository;
 import org.example.restaurant_manager.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class OrderDetailService {
 
@@ -35,7 +37,8 @@ public class OrderDetailService {
         this.orderDetailMapper = orderDetailMapper;
     }
 
-        public OrderDetailResponse create(CreateOrderDetailRequest request, Long orderId, Long foodId) {
+    @Transactional
+    public OrderDetailResponse create(CreateOrderDetailRequest request, Long orderId, Long foodId) {
         Long resolvedFoodId = foodId != null ? foodId : request.getFoodId();
 
         if (resolvedFoodId == null) {
@@ -48,6 +51,17 @@ public class OrderDetailService {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
+        OrderDetail existing = orderDetailRepository.findByOrderIdAndFoodId(orderId, resolvedFoodId).orElse(null);
+        if (existing != null) {
+            long oldQuantity = getSafeQuantity(existing.getQuantity());
+            long addQuantity = getSafeQuantity(request.getQuantity());
+            existing.setQuantity(oldQuantity + addQuantity);
+            existing.setPrice(food.getPrice());
+            OrderDetail saved = orderDetailRepository.save(existing);
+            refreshOrderTotal(orderId);
+            return orderDetailMapper.toOrderDetailResponse(saved);
+        }
+
         OrderDetail orderDetail = new OrderDetail();
         orderDetail.setQuantity(request.getQuantity());
 
@@ -56,6 +70,7 @@ public class OrderDetailService {
         orderDetail.setPrice(food.getPrice());
 
         OrderDetail saved = orderDetailRepository.save(orderDetail);
+        refreshOrderTotal(orderId);
         return orderDetailMapper.toOrderDetailResponse(saved);
     }
 
@@ -70,12 +85,22 @@ public class OrderDetailService {
         return orderDetailMapper.toOrderDetailResponse(getEntity(id));
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        orderDetailRepository.delete(getEntity(id));
+        OrderDetail oldOrderDetail = getEntity(id);
+        Long orderId = oldOrderDetail.getOrder() != null ? oldOrderDetail.getOrder().getId() : null;
+
+        orderDetailRepository.delete(oldOrderDetail);
+
+        if (orderId != null) {
+            refreshOrderTotal(orderId);
+        }
     }
 
+    @Transactional
     public OrderDetailResponse update(Long id, UpdateOrderDetailRequest newOrderDetail, Long foodId) {
         OrderDetail oldOrderDetail = getEntity(id);
+        Long orderId = oldOrderDetail.getOrder() != null ? oldOrderDetail.getOrder().getId() : null;
 
         if (foodId != null) {
             Food food = foodRepository.findById(foodId)
@@ -87,11 +112,35 @@ public class OrderDetailService {
         oldOrderDetail.setQuantity(newOrderDetail.getQuantity());
 
         OrderDetail saved = orderDetailRepository.save(oldOrderDetail);
+        if (orderId != null) {
+            refreshOrderTotal(orderId);
+        }
         return orderDetailMapper.toOrderDetailResponse(saved);
     }
 
     public OrderDetail getEntity(Long id) {
         return orderDetailRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_DETAIL_NOT_FOUND));
+    }
+
+    private long getSafeQuantity(Long quantity) {
+        return quantity == null ? 0L : quantity;
+    }
+
+    private void refreshOrderTotal(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        long total = orderDetailRepository.findByOrderId(orderId)
+                .stream()
+                .mapToLong(detail -> Math.round(getSafePrice(detail.getPrice()) * getSafeQuantity(detail.getQuantity())))
+                .sum();
+
+        order.setTotalAmount(total);
+        orderRepository.save(order);
+    }
+
+    private double getSafePrice(Double price) {
+        return price == null ? 0D : price;
     }
 }

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockStaffs } from "../../auth/MockStaff";
+import { getUsers, createUser, updateUser, deleteUser } from "../../service/user";
 import "../../styles/StaffManagement.css";
 
 const ITEMS_PER_PAGE = 6;
@@ -8,146 +8,196 @@ const ITEMS_PER_PAGE = 6;
 export default function Staffs() {
   const navigate = useNavigate();
 
-  const [staffs, setStaffs] = useState(mockStaffs);
+  const [staffs, setStaffs] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [editingStaff, setEditingStaff] = useState(null);
 
-  const [newStaff, setNewStaff] = useState({
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const emptyStaff = {
     name: "",
     email: "",
-    status: "Active",
-  });
+    password: "",
+    role: "STAFF"
+  };
 
-  const totalPages = Math.max(1, Math.ceil(staffs.length / ITEMS_PER_PAGE));
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentStaffs = staffs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const [newStaff, setNewStaff] = useState(emptyStaff);
+
+  const loadStaffs = useCallback(async (currentPage = 0) => {
+    try {
+      const res = await getUsers(currentPage, 6);
+      if (res?.status === 200) {
+        const data = res.data.result;
+        setStaffs(data.content || []);
+        setTotalPages(data.totalPages || 0);
+        setTotalElements(data.totalElements || 0);
+        setPage(currentPage);
+      }
+    } catch (error) {
+      console.error("Load staff error:", error);
+      alert("Không thể tải danh sách nhân viên");
+    }
+  }, []);
 
   useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
+    loadStaffs(0);
+  }, [loadStaffs]);
 
   const handleView = (id) => {
     navigate(`/admin/staffs/${id}`);
   };
 
-  // Mở modal
   const handleOpenModal = () => {
+    setEditingStaff(null);
+    setNewStaff(emptyStaff);
     setShowModal(true);
   };
 
-  // Đóng modal
+  const handleEdit = (staff) => {
+    setEditingStaff(staff);
+    setNewStaff({
+      name: staff.name,
+      email: staff.email,
+      password: "", // Don't pre-fill password for security/API reasons
+      role: staff.role
+    });
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => {
+    setEditingStaff(null);
+    setNewStaff(emptyStaff);
     setShowModal(false);
   };
 
-  // Lưu nhân viên mới
-  const handleSave = () => {
-    const staffToAdd = {
-      id: Date.now().toString(),
-      ...newStaff,
-    };
+  const handleSave = async () => {
+    if (!newStaff.name.trim() || !newStaff.email.trim()) {
+      alert("Vui lòng nhập tên và email.");
+      return;
+    }
 
-    const updatedStaffs = [...staffs, staffToAdd];
-    setStaffs(updatedStaffs);
-    setCurrentPage(Math.ceil(updatedStaffs.length / ITEMS_PER_PAGE));
-    setShowModal(false);
+    try {
+      if (editingStaff) {
+        await updateUser(editingStaff.id, newStaff);
+        alert("Cập nhật nhân viên thành công");
+      } else {
+        await createUser(newStaff);
+        alert("Thêm nhân viên thành công");
+      }
+      handleCloseModal();
+      loadStaffs(page);
+    } catch (error) {
+      console.error("Save staff error:", error);
+      alert("Có lỗi xảy ra khi lưu nhân viên");
+    }
+  };
 
-    // reset form
-    setNewStaff({
-      name: "",
-      email: "",
-      status: "Active",
-    });
+  const handleDelete = async (staffId) => {
+    const confirmDelete = window.confirm("Bạn có chắc muốn xóa nhân viên này?");
+    if (confirmDelete) {
+      try {
+        await deleteUser(staffId);
+        alert("Xóa nhân viên thành công");
+        loadStaffs(page);
+      } catch (error) {
+        console.error("Delete staff error:", error);
+        alert("Có lỗi xảy ra khi xóa nhân viên");
+      }
+    }
   };
 
   return (
     <div className="staff-container">
       <h2>Staff Management</h2>
 
-      <button onClick={handleOpenModal} style={{ marginBottom: "20px" }}>
+      <button onClick={handleOpenModal} style={{ marginBottom: "20px", width: "14%" }}>
         + Add Staff
       </button>
 
       <div className="staff-toolbar">
         <p>
-          Showing {staffs.length === 0 ? 0 : startIndex + 1}-
-          {Math.min(startIndex + ITEMS_PER_PAGE, staffs.length)} of {staffs.length}
-          {" "}
-          users
+          Showing {staffs.length === 0 ? 0 : page * 6 + 1}-
+          {Math.min((page + 1) * 6, totalElements)} of {totalElements} users
         </p>
       </div>
 
       <div className="staff-list">
-        {currentStaffs.map((staff) => (
+        {staffs.map((staff) => (
           <div key={staff.id} className="staff-card">
             <div>
               <h3>{staff.name}</h3>
               <p>{staff.email}</p>
 
-              <span
-                className={`status ${
-                  staff.status === "Active" ? "active" : "inactive"
-                }`}
-              >
-                {staff.status}
-              </span>
+              {staff.role && (
+                <span className="status active">
+                  {staff.role}
+                </span>
+              )}
             </div>
 
-            <button onClick={() => handleView(staff.id)}>
-              View Detail
-            </button>
+            <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
+              <button
+                onClick={() => handleView(staff.id)}
+                style={{ backgroundColor: "#22c55e" }}
+              >
+                View
+              </button>
+              <button
+                onClick={() => handleEdit(staff)}
+                style={{ backgroundColor: "#22c55e" }}
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(staff.id)}
+                style={{ backgroundColor: "#22c55e" }}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="pagination">
-        <button
-          type="button"
-          className="pagination-button"
-          onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Prev
-        </button>
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-button"
+            disabled={page === 0}
+            onClick={() => loadStaffs(page - 1)}
+          >
+            ← Trước
+          </button>
 
-        <div className="pagination-pages">
-          {Array.from({ length: totalPages }, (_, index) => {
-            const page = index + 1;
-
-            return (
+          <div className="pagination-pages">
+            {Array.from({ length: totalPages }, (_, i) => (
               <button
-                key={page}
-                type="button"
-                className={`pagination-button ${
-                  currentPage === page ? "active-page" : ""
-                }`}
-                onClick={() => setCurrentPage(page)}
+                key={i}
+                className={`pagination-button ${page === i ? "active-page" : ""}`}
+                onClick={() => loadStaffs(i)}
               >
-                {page}
+                {i + 1}
               </button>
-            );
-          })}
-        </div>
+            ))}
+          </div>
 
-        <button
-          type="button"
-          className="pagination-button"
-          onClick={() =>
-            setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
+          <button
+            className="pagination-button"
+            disabled={page === totalPages - 1}
+            onClick={() => loadStaffs(page + 1)}
+          >
+            Sau →
+          </button>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>Add New Staff</h3>
+            <h3>{editingStaff ? "Edit Staff" : "Add New Staff"}</h3>
 
             <input
               type="text"
@@ -167,14 +217,25 @@ export default function Staffs() {
               }
             />
 
+            {!editingStaff && (
+              <input
+                type="password"
+                placeholder="Mật khẩu khởi tạo"
+                value={newStaff.password}
+                onChange={(e) =>
+                  setNewStaff({ ...newStaff, password: e.target.value })
+                }
+              />
+            )}
+
             <select
-              value={newStaff.status}
+              value={newStaff.role}
               onChange={(e) =>
-                setNewStaff({ ...newStaff, status: e.target.value })
+                setNewStaff({ ...newStaff, role: e.target.value })
               }
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              <option value="STAFF">Staff</option>
+              <option value="ADMIN">Admin</option>
             </select>
 
             <div className="modal-buttons">

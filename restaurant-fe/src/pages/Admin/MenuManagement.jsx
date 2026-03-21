@@ -1,73 +1,181 @@
-import React, { useState } from "react";
-import { mockMenus } from "../../auth/MockMenu";
+import React, { useCallback, useEffect, useState } from "react";
 import "../../styles/StaffManagement.css";
+import { createFood, updateFood as updateFoodApi, getFood, deleteFood as deleteFoodApi } from "../../service/food";
+
+const API_URL = "http://localhost:8080";
+
+const initialForm = {
+  name: "",
+  description: "",
+  price: "",
+  imageFile: null,
+  imagePreview: "",
+};
 
 export default function MenuManagement() {
-  const [menus, setMenus] = useState(mockMenus);
+  const [menus, setMenus] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [form, setForm] = useState(initialForm);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const [newItem, setNewItem] = useState({
-    name: "",
-    description: "",
-    price: "",
-  });
-
-  // =========================
-  // SAVE (ADD OR EDIT)
-  // =========================
-  const handleSave = () => {
-    if (editingItem) {
-      // UPDATE
-      setMenus(
-        menus.map((item) =>
-          item.id === editingItem.id
-            ? {
-                ...newItem,
-                id: editingItem.id,
-                price: Number(newItem.price),
-              }
-            : item
-        )
-      );
-    } else {
-      // ADD
-      const itemToAdd = {
-        id: Date.now().toString(),
-        ...newItem,
-        price: Number(newItem.price),
-      };
-      setMenus([...menus, itemToAdd]);
+  // Load menu data from API
+  const loadMenu = useCallback(async (currentPage = 0) => {
+    try {
+      setLoading(true);
+      const res = await getFood(currentPage, 6);
+      if (res?.status === 200) {
+        const data = res.data.result;
+        setMenus(data.content || []);
+        setTotalPages(data.totalPages || 0);
+        setPage(currentPage);
+      }
+    } catch (error) {
+      console.error("Load menu error:", error);
+      alert("Không thể tải danh sách menu");
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
-    setShowModal(false);
+  // Load data on mount
+  useEffect(() => {
+    loadMenu();
+  }, [loadMenu]);
+
+
+
+  const resetForm = useCallback(() => {
+    setForm(initialForm);
     setEditingItem(null);
+    setShowModal(false);
+  }, []);
 
-    setNewItem({
-      name: "",
-      description: "",
-      price: "",
-    });
-  };
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
 
-  // =========================
-  // EDIT
-  // =========================
-  const handleEdit = (item) => {
-    setEditingItem(item);
-    setNewItem(item);
-    setShowModal(true);
-  };
+  const handleImageChange = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  // =========================
-  // DELETE
-  // =========================
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm("Are you sure?");
-    if (confirmDelete) {
-      setMenus(menus.filter((item) => item.id !== id));
+    // Giới hạn: 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ảnh quá lớn. Vui lòng chọn ảnh dưới 5MB.");
+      return;
     }
+
+    setForm((prev) => ({
+      ...prev,
+      imageFile: file,
+      imagePreview: URL.createObjectURL(file),
+    }));
+  }, []);
+
+  const validateForm = () => {
+    if (!form.name.trim()) {
+      alert("Vui lòng nhập tên món ăn");
+      return false;
+    }
+
+    if (!form.price || Number(form.price) <= 0) {
+      alert("Vui lòng nhập giá hợp lệ");
+      return false;
+    }
+
+    return true;
   };
+
+  // Build full image URL from server path
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "";
+    if (imagePath.startsWith("http")) return imagePath;
+    return `${API_URL}${imagePath}`;
+  };
+
+  const handleSave = useCallback(async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
+
+    try {
+      if (editingItem) {
+        // Update existing food
+        const res = await updateFoodApi(editingItem.id, {
+          name: form.name.trim(),
+          description: form.description.trim(),
+          price: Number(form.price),
+          imageFile: form.imageFile,
+        });
+
+        if (res?.status === 200 || res?.status === 201) {
+          const updatedFood = res.data.result;
+          setMenus((prev) =>
+            prev.map((item) => (item.id === editingItem.id ? updatedFood : item))
+          );
+          alert("Cập nhật món ăn thành công");
+        } else {
+          alert("Cập nhật món ăn thất bại");
+        }
+      } else {
+        // Create new food
+        const res = await createFood({
+          name: form.name.trim(),
+          description: form.description.trim(),
+          price: Number(form.price),
+          imageFile: form.imageFile,
+        });
+
+        if (res?.status === 200 || res?.status === 201) {
+          const newFood = res.data.result;
+          setMenus((prev) => [...prev, newFood]);
+          alert("Thêm món ăn thành công");
+        } else {
+          alert("Thêm món ăn thất bại");
+        }
+      }
+
+      resetForm();
+      loadMenu(page); // Reload data after save
+    } catch (error) {
+      console.error("Save food error:", error);
+      alert("Có lỗi xảy ra khi lưu món ăn");
+    } finally {
+      setLoading(false);
+    }
+  }, [form, editingItem, resetForm]);
+
+  const handleEdit = useCallback((item) => {
+    setEditingItem(item);
+    setForm({
+      name: item.name || "",
+      description: item.description || "",
+      price: item.price || "",
+      imageFile: null,
+      imagePreview: item.image ? getImageUrl(item.image) : "",
+    });
+    setShowModal(true);
+  }, []);
+
+  const handleDelete = useCallback(async (id) => {
+    const confirmDelete = window.confirm("Bạn có chắc muốn xóa món ăn này?");
+    if (!confirmDelete) return;
+
+    try {
+      await deleteFoodApi(id);
+      setMenus((prev) => prev.filter((item) => item.id !== id));
+      alert("Xóa món ăn thành công");
+    } catch (error) {
+      console.error("Delete food error:", error);
+      alert("Có lỗi xảy ra khi xóa món ăn");
+    }
+  }, []);
 
   return (
     <div className="staff-container">
@@ -77,6 +185,7 @@ export default function MenuManagement() {
         className="add-btn"
         onClick={() => {
           setEditingItem(null);
+          setForm(initialForm);
           setShowModal(true);
         }}
         style={{ marginBottom: "20px" }}
@@ -87,65 +196,122 @@ export default function MenuManagement() {
       <div className="staff-list">
         {menus.map((item) => (
           <div key={item.id} className="staff-card">
-            <div>
-              <h3>{item.name}</h3>
-              <p>{item.description}</p>
-              <p>{Number(item.price).toLocaleString()} VND</p>
+            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+              <img
+                src={getImageUrl(item.image) || "https://via.placeholder.com/100x100?text=No+Image"}
+                alt={item.name}
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                  border: "1px solid #ddd",
+                }}
+              />
+
+              <div>
+                <h3>{item.name}</h3>
+                <p>{item.description}</p>
+                <p>{Number(item.price).toLocaleString()} VND</p>
+              </div>
             </div>
 
-            {/* ACTION BUTTONS */}
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
               <button onClick={() => handleEdit(item)}>Edit</button>
-              <button onClick={() => handleDelete(item.id)}>
-                Delete
-              </button>
+              <button onClick={() => handleDelete(item.id)}>Delete</button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* MODAL */}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-button"
+            disabled={page === 0}
+            onClick={() => loadMenu(page - 1)}
+          >
+            ← Trước
+          </button>
+
+          <div className="pagination-pages">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                className={`pagination-button ${page === i ? "active-page" : ""}`}
+                onClick={() => loadMenu(i)}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="pagination-button"
+            disabled={page === totalPages - 1}
+            onClick={() => loadMenu(page + 1)}
+          >
+            Sau →
+          </button>
+        </div>
+      )}
+
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>
-              {editingItem ? "Edit Menu Item" : "Add Menu Item"}
-            </h3>
+            <h3>{editingItem ? "Edit Menu Item" : "Add Menu Item"}</h3>
 
             <input
+              name="name"
               placeholder="Name"
-              value={newItem.name}
-              onChange={(e) =>
-                setNewItem({ ...newItem, name: e.target.value })
-              }
+              value={form.name}
+              onChange={handleChange}
             />
 
             <input
+              name="price"
               type="number"
               placeholder="Price"
-              value={newItem.price}
-              onChange={(e) =>
-                setNewItem({ ...newItem, price: e.target.value })
-              }
+              value={form.price}
+              onChange={handleChange}
             />
 
             <textarea
+              name="description"
               placeholder="Description"
               rows="3"
-              value={newItem.description}
-              onChange={(e) =>
-                setNewItem({ ...newItem, description: e.target.value })
-              }
+              value={form.description}
+              onChange={handleChange}
             />
 
-            <div style={{ marginTop: "10px" }}>
-              <button onClick={handleSave}>Save</button>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditingItem(null);
-                }}
-              >
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+
+            {form.imagePreview && (
+              <div style={{ marginTop: "10px" }}>
+                <img
+                  src={form.imagePreview}
+                  alt="Preview"
+                  style={{
+                    width: "120px",
+                    height: "120px",
+                    objectFit: "cover",
+                    borderRadius: "10px",
+                    border: "1px solid #ddd",
+                  }}
+                />
+              </div>
+            )}
+
+            <div style={{ marginTop: "10px", display: "flex", gap: "8px" }}>
+              <button onClick={handleSave} disabled={loading}>
+                {loading ? "Saving..." : "Save"}
+              </button>
+              <button onClick={resetForm} disabled={loading}>
                 Cancel
               </button>
             </div>

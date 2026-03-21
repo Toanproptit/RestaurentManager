@@ -80,7 +80,8 @@ public class DiningTableService {
         diningTable.setName(request.getName());
         diningTable.setDescription(request.getDescription());
         diningTable.setMaxGuests(request.getMaxGuests());
-
+        diningTable.setStatus(request.getStatus() != null ? request.getStatus() : "Available");
+        diningTable.setArea(request.getArea());
         if (request.getReservationDetailId() != null) {
             diningTable.setReservationDetail(getReservationDetail(request.getReservationDetailId()));
         }
@@ -106,6 +107,12 @@ public class DiningTableService {
         }
         if (newTable.getMaxGuests() != null) {
             oldTable.setMaxGuests(newTable.getMaxGuests());
+        }
+        if (newTable.getStatus() != null) {
+            oldTable.setStatus(newTable.getStatus());
+        }
+        if (newTable.getArea() != null) {
+            oldTable.setArea(newTable.getArea());
         }
 
         if (Boolean.TRUE.equals(newTable.getClearReservationDetail())) {

@@ -1,15 +1,18 @@
 package org.example.restaurant_manager.controller;
 
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.example.restaurant_manager.dto.response.ApiResponse;
+import org.example.restaurant_manager.dto.response.DashboardSummaryResponse;
 import org.example.restaurant_manager.dto.response.RevenueStatisticsResponse;
 import org.example.restaurant_manager.service.InvoiceService;
+import org.example.restaurant_manager.service.ReportService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/reports")
@@ -17,6 +20,16 @@ import java.util.List;
 public class ReportController {
 
     public final InvoiceService invoiceService;
+    public final ReportService reportService;
+
+    @GetMapping("/summary")
+    public ApiResponse<DashboardSummaryResponse> getSummary() {
+        return ApiResponse.<DashboardSummaryResponse>builder()
+                .code(200)
+                .message("success")
+                .result(reportService.getDashboardSummary())
+                .build();
+    }
 
     @GetMapping("/revenue/daily")
     public ApiResponse<List<RevenueStatisticsResponse>> getRevenueByDay() {

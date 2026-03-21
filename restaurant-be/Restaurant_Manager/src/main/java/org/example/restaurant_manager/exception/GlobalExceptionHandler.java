@@ -2,6 +2,7 @@ package org.example.restaurant_manager.exception;
 
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.enums.ErrorCode;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,6 +42,23 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.<Void>builder()
                         .code(ErrorCode.UNAUTHORIZED.getCode())
                         .message(ErrorCode.UNAUTHORIZED.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
+                Throwable mostSpecificCause = exception.getMostSpecificCause();
+                String rootMessage = mostSpecificCause != null ? mostSpecificCause.getMessage() : null;
+
+        String message = ErrorCode.DATA_INTEGRITY_VIOLATION.getMessage();
+        if (rootMessage != null && rootMessage.contains("Data truncated for column 'status'")) {
+            message = "Database schema mismatch for reservation status. Please update DB enum to include CHECKED_IN.";
+        }
+
+        return ResponseEntity.status(ErrorCode.DATA_INTEGRITY_VIOLATION.getStatusCode())
+                .body(ApiResponse.<Void>builder()
+                        .code(ErrorCode.DATA_INTEGRITY_VIOLATION.getCode())
+                        .message(message)
                         .build());
     }
 

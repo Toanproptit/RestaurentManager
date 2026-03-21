@@ -7,7 +7,15 @@ import org.example.restaurant_manager.entity.Invoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
+public interface
+
+
+
+
+InvoiceRepository extends JpaRepository<Invoice,Long> {
+    @Query("SELECT COALESCE(SUM(i.total), 0) FROM Invoice i")
+    Double getTotalRevenue();
+
     @Query("SELECT new org.example.restaurant_manager.dto.response.RevenueStatisticsResponse(" +
 	    "YEAR(i.date), MONTH(i.date), DAY(i.date), SUM(i.total)) " +
 	    "FROM Invoice i " +

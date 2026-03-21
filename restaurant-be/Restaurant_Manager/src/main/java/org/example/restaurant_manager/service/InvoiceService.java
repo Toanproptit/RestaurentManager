@@ -68,6 +68,27 @@ public class InvoiceService {
 
     private double resolveInvoiceTotal(Order order) {
         Long totalAmount = order.getTotalAmount();
-        return totalAmount != null ? totalAmount.doubleValue() : 0D;
+        if (totalAmount != null && totalAmount > 0) {
+            return totalAmount.doubleValue();
+        }
+
+        long derivedTotal = order.getOrderDetails() == null ? 0L : order.getOrderDetails()
+                .stream()
+                .mapToLong(detail -> Math.round(getSafePrice(detail.getPrice()) * getSafeQuantity(detail.getQuantity())))
+                .sum();
+
+        if (derivedTotal > 0) {
+            order.setTotalAmount(derivedTotal);
+        }
+
+        return (double) derivedTotal;
+    }
+
+    private long getSafeQuantity(Long quantity) {
+        return quantity == null ? 0L : quantity;
+    }
+
+    private double getSafePrice(Double price) {
+        return price == null ? 0D : price;
     }
 }

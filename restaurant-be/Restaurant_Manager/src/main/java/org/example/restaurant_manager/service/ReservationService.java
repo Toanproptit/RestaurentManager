@@ -9,6 +9,7 @@ import org.example.restaurant_manager.dto.response.ReservationResponse;
 import org.example.restaurant_manager.entity.Customer;
 import org.example.restaurant_manager.entity.Reservation;
 import org.example.restaurant_manager.enums.ErrorCode;
+import org.example.restaurant_manager.enums.ReservationStatus;
 import org.example.restaurant_manager.exception.AppException;
 import org.example.restaurant_manager.mapper.ReservationMapper;
 import org.example.restaurant_manager.repository.CustomerRepository;
@@ -70,7 +71,12 @@ public class ReservationService {
         reservation.setReservationDate(request.getReservationDate());
         reservation.setStartTime(request.getStartTime());
         reservation.setEndTime(request.getEndTime());
-        reservation.setCustomer(getCustomer(request.getCustomerId()));
+        if (request.getCustomerId() != null) {
+            reservation.setCustomer(getCustomer(request.getCustomerId()));
+            reservation.setStatus(ReservationStatus.CONFIRMED);
+        } else {
+            reservation.setStatus(ReservationStatus.DRAFT);
+        }
 
         return reservationMapper.toReservationResponse(
                 reservationRepository.save(reservation)
@@ -92,6 +98,18 @@ public class ReservationService {
         }
         if (newReservation.getCustomerId() != null) {
             oldReservation.setCustomer(getCustomer(newReservation.getCustomerId()));
+            oldReservation.setStatus(ReservationStatus.CONFIRMED);
+        }
+
+        if (newReservation.getStatus() != null) {
+            validateStatusTransition(oldReservation, newReservation.getStatus());
+            oldReservation.setStatus(newReservation.getStatus());
+        }
+
+        if (oldReservation.getStatus() == null) {
+            oldReservation.setStatus(oldReservation.getCustomer() != null
+                    ? ReservationStatus.CONFIRMED
+                    : ReservationStatus.DRAFT);
         }
 
         return reservationMapper.toReservationResponse(oldReservation);
@@ -110,5 +128,35 @@ public class ReservationService {
     private Customer getCustomer(Long id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CUSTOMER_NOT_FOUND));
+    }
+
+    private void validateStatusTransition(Reservation reservation, ReservationStatus targetStatus) {
+        if (targetStatus == ReservationStatus.CONFIRMED && reservation.getCustomer() == null) {
+            throw new AppException(ErrorCode.RESERVATION_CUSTOMER_REQUIRED);
+        }
+
+        if (targetStatus == ReservationStatus.CHECKED_IN) {
+            if (reservation.getStatus() != ReservationStatus.CONFIRMED
+                    && reservation.getStatus() != ReservationStatus.CHECKED_IN) {
+                throw new AppException(ErrorCode.RESERVATION_STATUS_INVALID);
+            }
+
+            if (reservation.getCustomer() == null) {
+                throw new AppException(ErrorCode.RESERVATION_CUSTOMER_REQUIRED);
+            }
+
+            boolean hasAssignedTable = reservation.getReservationDetail() != null
+                    && reservation.getReservationDetail().stream()
+                    .anyMatch(detail -> detail.getDiningTables() != null && !detail.getDiningTables().isEmpty());
+
+            if (!hasAssignedTable) {
+                throw new AppException(ErrorCode.RESERVATION_TABLE_REQUIRED_FOR_CHECK_IN);
+            }
+        }
+
+        if (reservation.getStatus() == ReservationStatus.CHECKED_IN
+                && targetStatus != ReservationStatus.CHECKED_IN) {
+            throw new AppException(ErrorCode.RESERVATION_STATUS_INVALID);
+        }
     }
 }

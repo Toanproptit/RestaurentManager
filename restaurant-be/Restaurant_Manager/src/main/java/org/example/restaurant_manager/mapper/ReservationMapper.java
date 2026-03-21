@@ -7,7 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReservationMapper {
     public ReservationResponse toReservationResponse(Reservation reservation){
-        return new ReservationResponse(reservation.getReservationDate(),reservation.getStartTime(),reservation.getEndTime(),reservation.getCustomer().getId());
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getReservationDate(),
+                reservation.getStartTime(),
+                reservation.getEndTime(),
+                reservation.getStatus(),
+                reservation.getCustomer() != null ? reservation.getCustomer().getId() : null
+        );
     }
 
 }

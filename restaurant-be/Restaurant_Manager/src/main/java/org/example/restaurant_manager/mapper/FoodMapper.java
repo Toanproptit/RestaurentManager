@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class FoodMapper {
     public FoodResponse toFoodResponse(Food food){
-        return new FoodResponse(food.getId(),food.getName(),food.getDescription(),food.getPrice());
+        return new FoodResponse(food.getId(),food.getName(),food.getDescription(),food.getPrice(),food.getImage());
     }
 }

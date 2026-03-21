@@ -5,21 +5,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/Login.css"
 
+export default function LoginForm({ onSubmit, error }) {
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('');
 
-export default function Login({onSubmit}){
-    const [username ,setUsername] = useState('')
-    const [password ,setPassword] = useState('');
-
-    const handleSubmit = (e) =>{
+    const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Đã lấy dữ liệu để đăng nhập");
-        
-        onSubmit({username,password})
-    } 
+        onSubmit({ username, password });
+    }
+
     return (
         <div className="bground_login">
             <form className="login_card" onSubmit={handleSubmit}>
                 <h2 className="login_title">Đăng nhập</h2>
+
+                {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
                 <div className="input_user">
                     <FontAwesomeIcon icon={faUser} />
@@ -51,4 +51,4 @@ export default function Login({onSubmit}){
             </form>
         </div>
     )
-}
+}

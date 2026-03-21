@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { mockTables } from "../../auth/MockTable";
+import React, { useState, useEffect, useCallback } from "react";
+import { createTable, updateTable, getTables, deleteTable } from "../../service/table";
 import "../../styles/TableManagement.css";
 
 const emptyTable = {
@@ -11,10 +11,31 @@ const emptyTable = {
 };
 
 export default function TableManagement() {
-  const [tables, setTables] = useState(mockTables);
+  const [tables, setTables] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingTable, setEditingTable] = useState(null);
   const [tableForm, setTableForm] = useState(emptyTable);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const loadTable = useCallback(async (currentPage = 0) => {
+    try {
+      const res = await getTables(currentPage, 3);
+      if (res?.status === 200) {
+        const data = res.data.result;
+        setTables(data.content || []);
+        setTotalPages(data.totalPages || 0);
+        setPage(currentPage);
+      }
+    } catch (error) {
+      console.error("Load table error:", error);
+      alert("Không thể tải danh sách bàn");
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTable(0);
+  }, [loadTable]);
 
   const resetForm = () => {
     setEditingTable(null);
@@ -40,54 +61,61 @@ export default function TableManagement() {
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!tableForm.name.trim() || !tableForm.area.trim()) {
       window.alert("Please enter table name and area.");
       return;
     }
 
-    if (editingTable) {
-      setTables(
-        tables.map((table) =>
-          table.id === editingTable.id
-            ? {
-                ...table,
-                ...tableForm,
-                maxGuests: Number(tableForm.maxGuests),
-              }
-            : table
-        )
-      );
-    } else {
-      const newTable = {
-        id: `TB-${Date.now()}`,
-        ...tableForm,
-        maxGuests: Number(tableForm.maxGuests),
-      };
-
-      setTables([newTable, ...tables]);
+    try {
+      if (editingTable) {
+        await updateTable(editingTable.id, {
+          name: tableForm.name,
+          description: tableForm.description,
+          maxGuests: Number(tableForm.maxGuests),
+          area: tableForm.area,
+          status: tableForm.status
+        });
+        alert("Cập nhật bàn thành công");
+      } else {
+        await createTable({
+          name: tableForm.name,
+          description: tableForm.description,
+          maxGuests: Number(tableForm.maxGuests),
+          area: tableForm.area,
+          status: tableForm.status
+        });
+        alert("Thêm bàn thành công");
+      }
+      resetForm();
+      loadTable(page);
+    } catch (error) {
+      console.error("Save table error:", error);
+      alert("Có lỗi xảy ra khi lưu bàn");
     }
-
-    resetForm();
   };
 
-  const handleDelete = (tableId) => {
+  const handleDelete = async (tableId) => {
     const confirmDelete = window.confirm("Delete this table?");
     if (confirmDelete) {
-      setTables(tables.filter((table) => table.id !== tableId));
+      try {
+        await deleteTable(tableId);
+        alert("Xóa bàn thành công");
+        loadTable(page);
+      } catch (error) {
+        console.error("Delete table error:", error);
+        alert("Có lỗi xảy ra khi xóa bàn");
+      }
     }
   };
 
   const availableCount = tables.filter((table) => table.status === "Available").length;
   const reservedCount = tables.filter((table) => table.status === "Reserved").length;
+  const orderCount = tables.filter((table) => table.status === "Order").length;
 
   return (
     <div className="table-management-page">
       <div className="table-management-head">
-        <div>
-          <h2>Table Management</h2>
-          <p>Create and manage restaurant tables with mock data.</p>
-        </div>
 
         <button className="table-primary-btn" onClick={handleOpenCreate}>
           + Add Table
@@ -107,6 +135,10 @@ export default function TableManagement() {
           <span>Reserved</span>
           <strong>{reservedCount}</strong>
         </div>
+        <div className="table-overview-card warning">
+          <span>Order</span>
+          <strong>{orderCount}</strong>
+        </div>
       </div>
 
       <div className="table-list-grid">
@@ -119,9 +151,9 @@ export default function TableManagement() {
               </div>
 
               <span
-                className={`table-status ${table.status.toLowerCase()}`}
+                className={`table-status ${(table.status || "Available").toLowerCase()}`}
               >
-                {table.status}
+                {table.status || "Available"}
               </span>
             </div>
 
@@ -149,6 +181,38 @@ export default function TableManagement() {
           </div>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-button"
+            disabled={page === 0}
+            onClick={() => loadTable(page - 1)}
+          >
+            ← Trước
+          </button>
+
+          <div className="pagination-pages">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                className={`pagination-button ${page === i ? "active-page" : ""}`}
+                onClick={() => loadTable(i)}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="pagination-button"
+            disabled={page === totalPages - 1}
+            onClick={() => loadTable(page + 1)}
+          >
+            Sau →
+          </button>
+        </div>
+      )}
 
       {showModal && (
         <div className="modal-overlay">
@@ -200,6 +264,7 @@ export default function TableManagement() {
             >
               <option value="Available">Available</option>
               <option value="Reserved">Reserved</option>
+              <option value="Order">Order</option>
               <option value="Inactive">Inactive</option>
             </select>
 

@@ -3,9 +3,7 @@ package org.example.restaurant_manager.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.example.restaurant_manager.enums.OrderStatus;
 
@@ -51,11 +49,11 @@ public class Order {
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
 
-    @OneToMany(
+        @OneToOne(
             mappedBy = "order",
-        fetch = FetchType.LAZY
-    )
-    private Set<DiningTable>  diningTables = new HashSet<>();
+            fetch = FetchType.LAZY
+        )
+        private DiningTable diningTable;
 
     @OneToOne(
             mappedBy = "order",
@@ -73,14 +71,29 @@ public class Order {
         orderDetail.setOrder(null);
     }
 
-    public void addDiningTable(DiningTable diningTable) {
-        this.diningTables.add(diningTable);
-        diningTable.setOrder(this);
+    public void assignDiningTable(DiningTable diningTable) {
+        if (this.diningTable != null && this.diningTable != diningTable) {
+            this.diningTable.setOrder(null);
+        }
+
+        this.diningTable = diningTable;
+
+        if (diningTable != null && diningTable.getOrder() != this) {
+            diningTable.setOrder(this);
+        }
     }
 
-    public void removeDiningTable(DiningTable diningTable) {
-        this.diningTables.remove(diningTable);
-        diningTable.setOrder(null);
+    public void clearDiningTable() {
+        if (this.diningTable == null) {
+            return;
+        }
+
+        DiningTable oldTable = this.diningTable;
+        this.diningTable = null;
+
+        if (oldTable.getOrder() == this) {
+            oldTable.setOrder(null);
+        }
     }
 
 }

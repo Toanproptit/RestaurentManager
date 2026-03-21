@@ -16,7 +16,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Food {
+public class    Food {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

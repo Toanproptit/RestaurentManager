@@ -7,6 +7,8 @@ public class UpdateDiningTableRequest {
     private String name;
     private String description;
     private Integer maxGuests;
+    private String status;
+    private String area;
     private Long reservationDetailId;
     private Long orderId;
     private Boolean clearReservationDetail;

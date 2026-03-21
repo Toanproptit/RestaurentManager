@@ -1,6 +1,5 @@
 package org.example.restaurant_manager.mapper;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.example.restaurant_manager.dto.response.DiningTableResponse;
@@ -20,9 +19,9 @@ public class OrderMapper {
     }
 
     public OrderResponse toOrderResponse(Order order){
-        Set<DiningTableResponse> diningTables = order.getDiningTables().stream()
-                .map(diningTableMapper::toDiningTableResponse)
-                .collect(Collectors.toSet());
+        DiningTableResponse diningTable = order.getDiningTable() != null
+            ? diningTableMapper.toDiningTableResponse(order.getDiningTable())
+            : null;
 
         return new OrderResponse(
                 order.getId(),
@@ -32,7 +31,7 @@ public class OrderMapper {
                 order.getOrderDetails().stream()
                         .map(orderDetailMapper::toOrderDetailResponse)
                         .collect(Collectors.toList()),
-                diningTables
+            diningTable
         );
     }
 }
