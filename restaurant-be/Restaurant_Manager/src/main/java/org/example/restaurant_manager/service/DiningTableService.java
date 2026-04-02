@@ -6,6 +6,7 @@ import org.example.restaurant_manager.dto.request.CreateDiningTableRequest;
 import org.example.restaurant_manager.dto.request.UpdateDiningTableRequest;
 import org.example.restaurant_manager.dto.response.DiningTableResponse;
 import org.example.restaurant_manager.dto.response.PageResponse;
+import org.example.restaurant_manager.dto.response.TableStatisticsResponse;
 import org.example.restaurant_manager.entity.DiningTable;
 import org.example.restaurant_manager.entity.Order;
 import org.example.restaurant_manager.entity.ReservationDetail;
@@ -40,12 +41,20 @@ public class DiningTableService {
         this.orderRepository = orderRepository;
     }
 
-//    public List<DiningTableResponse> findAll() {
 //        return diningTableRepository.findAll()
 //                .stream()
 //                .map(diningTableMapper::toDiningTableResponse)
 //                .toList();
 //    }
+
+    public TableStatisticsResponse getStatistics() {
+        return TableStatisticsResponse.builder()
+                .total(diningTableRepository.count())
+                .available(diningTableRepository.countByStatus("Available"))
+                .reserved(diningTableRepository.countByStatus("Reserved"))
+                .order(diningTableRepository.countByStatus("Order"))
+                .build();
+    }
 
 
     public PageResponse<DiningTableResponse> findAll(int page , int size) {

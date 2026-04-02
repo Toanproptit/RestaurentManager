@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { createTable, updateTable, getTables, deleteTable } from "../../service/table";
+import { createTable, updateTable, getTables, deleteTable, getTableStatistics } from "../../service/table";
 import "../../styles/TableManagement.css";
 
 const emptyTable = {
@@ -17,6 +17,7 @@ export default function TableManagement() {
   const [tableForm, setTableForm] = useState(emptyTable);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [tableStats, setTableStats] = useState({ total: 0, available: 0, reserved: 0, order: 0 });
 
   const loadTable = useCallback(async (currentPage = 0) => {
     try {
@@ -26,6 +27,17 @@ export default function TableManagement() {
         setTables(data.content || []);
         setTotalPages(data.totalPages || 0);
         setPage(currentPage);
+      }
+      
+      const statsRes = await getTableStatistics();
+      if (statsRes?.status === 200) {
+        const statsData = statsRes.data.result || {};
+        setTableStats({
+          total: statsData.total ?? 0,
+          available: statsData.available ?? 0,
+          reserved: statsData.reserved ?? 0,
+          order: statsData.order ?? 0,
+        });
       }
     } catch (error) {
       console.error("Load table error:", error);
@@ -109,10 +121,6 @@ export default function TableManagement() {
     }
   };
 
-  const availableCount = tables.filter((table) => table.status === "Available").length;
-  const reservedCount = tables.filter((table) => table.status === "Reserved").length;
-  const orderCount = tables.filter((table) => table.status === "Order").length;
-
   return (
     <div className="table-management-page">
       <div className="table-management-head">
@@ -125,19 +133,19 @@ export default function TableManagement() {
       <div className="table-overview-grid">
         <div className="table-overview-card">
           <span>Total Tables</span>
-          <strong>{tables.length}</strong>
+          <strong>{tableStats.total}</strong>
         </div>
         <div className="table-overview-card success">
           <span>Available</span>
-          <strong>{availableCount}</strong>
+          <strong>{tableStats.available}</strong>
         </div>
         <div className="table-overview-card warning">
           <span>Reserved</span>
-          <strong>{reservedCount}</strong>
+          <strong>{tableStats.reserved}</strong>
         </div>
         <div className="table-overview-card warning">
           <span>Order</span>
-          <strong>{orderCount}</strong>
+          <strong>{tableStats.order}</strong>
         </div>
       </div>
 

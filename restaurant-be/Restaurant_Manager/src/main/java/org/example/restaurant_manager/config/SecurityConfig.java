@@ -67,7 +67,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/foods").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/foods/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/foods/**").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/foods/top-selling").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST , "/dining-tables/**").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 );

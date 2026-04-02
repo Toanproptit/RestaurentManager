@@ -5,3 +5,4 @@ export const updateTable = (id, data) => api.put(`/dining-tables/${id}`, data);
 export const deleteTable = (id) => api.delete(`/dining-tables/${id}`);
 export const getTableById = (id) => api.get(`/dining-tables/${id}`);
 export const getTables = (page, size) => api.get(`/dining-tables?page=${page}&size=${size}`);
+export const getTableStatistics = () => api.get(`/dining-tables/statistics`);

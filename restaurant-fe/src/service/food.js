@@ -31,3 +31,4 @@ export const updateFood = (id, data) => {
 export const deleteFood = (id) => api.delete(`/foods/${id}`);
 export const getFoodById = (id) => api.get(`/foods/${id}`);
 export const getFood = (page, size) => api.get(`/foods?page=${page}&size=${size}`);
+export const searchFood = (name, page, size) => api.get(`/foods/search?name=${encodeURIComponent(name)}&page=${page}&size=${size}`);

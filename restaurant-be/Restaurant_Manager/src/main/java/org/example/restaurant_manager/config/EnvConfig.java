@@ -11,7 +11,6 @@ public class EnvConfig {
         String password = dotenv.get("DB_PASSWORD");
         String key = dotenv.get("SIGNER_KEY");
 
-
         System.setProperty("DB_USERNAME",user);
         System.setProperty("DB_PASSWORD",password);
         System.setProperty("SIGNER_KEY", key);

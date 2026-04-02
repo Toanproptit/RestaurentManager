@@ -228,9 +228,7 @@ export default function Orders() {
         totalAmount: Math.round(total),
       });
 
-      await createInvoiceForOrder(orderIdToClose, {
-        date: new Date().toISOString(),
-      });
+      await createInvoiceForOrder(orderIdToClose, {});
 
       if (selectedTable) {
         await updateTable(selectedTable.id, {
@@ -343,22 +341,25 @@ export default function Orders() {
         const existingDetail = existingByFoodId.get(foodId);
         if (existingDetail && existingDetail.id != null) {
           if (existingDetail.quantity !== cartItem.qty) {
-            syncTasks.push(
+            syncTasks.push(() =>
               updateOrderDetail(orderId, existingDetail.id, foodId, cartItem.qty)
             );
           }
         } else {
-          syncTasks.push(addOrderDetail(orderId, foodId, cartItem.qty));
+          syncTasks.push(() => addOrderDetail(orderId, foodId, cartItem.qty));
         }
       }
 
       for (const [foodId, existingDetail] of existingByFoodId.entries()) {
         if (!cartByFoodId.has(foodId) && existingDetail?.id != null) {
-          syncTasks.push(removeOrderDetail(orderId, existingDetail.id));
+          syncTasks.push(() => removeOrderDetail(orderId, existingDetail.id));
         }
       }
 
-      await Promise.all(syncTasks);
+      // Chạy tuần tự để tránh deadlock khi nhiều request cùng update bảng orders
+      for (const task of syncTasks) {
+        await task();
+      }
 
       const confirmedRes = await getOrderById(orderId);
       if (confirmedRes?.status === 200) {

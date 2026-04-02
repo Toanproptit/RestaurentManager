@@ -2,11 +2,10 @@ package org.example.restaurant_manager.dto.request;
 
 import java.util.Date;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class CreateInvoiceRequest {
-    @NotNull(message = "Invoice date is required")
+    // date là optional, nếu không truyền thì backend tự set = now
     private Date date;
 }

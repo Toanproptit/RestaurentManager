@@ -7,6 +7,7 @@ import org.example.restaurant_manager.dto.request.UpdateDiningTableRequest;
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.DiningTableResponse;
 import org.example.restaurant_manager.dto.response.PageResponse;
+import org.example.restaurant_manager.dto.response.TableStatisticsResponse;
 import org.example.restaurant_manager.service.DiningTableService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,8 @@ public class DiningTableController {
 
     @GetMapping
     public ApiResponse<PageResponse<DiningTableResponse>> getAll(
-            @RequestParam (defaultValue = "0") int page ,
-            @RequestParam (defaultValue = "10") int size
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         return ApiResponse.<PageResponse<DiningTableResponse>>builder()
                 .code(200)
@@ -34,8 +35,17 @@ public class DiningTableController {
                 .build();
     }
 
+    @GetMapping("/statistics")
+    public ApiResponse<TableStatisticsResponse> getStatistics() {
+        return ApiResponse.<TableStatisticsResponse>builder()
+                .code(200)
+                .message("success")
+                .result(diningTableService.getStatistics())
+                .build();
+    }
+
     @GetMapping("/{id}")
-    public ApiResponse<DiningTableResponse> getById(@PathVariable Long id) {
+    public ApiResponse<DiningTableResponse> getById(@PathVariable("id") Long id) {
         return ApiResponse.<DiningTableResponse>builder()
                 .code(200)
                 .message("success")
@@ -54,7 +64,7 @@ public class DiningTableController {
 
     @PutMapping("/{id}")
     public ApiResponse<DiningTableResponse> update(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody @Valid UpdateDiningTableRequest diningTable
     ) {
         return ApiResponse.<DiningTableResponse>builder()
@@ -65,7 +75,7 @@ public class DiningTableController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable("id") Long id) {
         diningTableService.deleteById(id);
         return ApiResponse.<Void>builder()
                 .code(200)

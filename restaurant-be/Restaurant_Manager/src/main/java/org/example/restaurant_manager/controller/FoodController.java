@@ -30,8 +30,8 @@ public class FoodController {
 
     @GetMapping
     public ApiResponse<PageResponse<FoodResponse>> getFoods(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam( defaultValue = "0") int page,
+            @RequestParam( defaultValue = "10") int size
     ){
         return ApiResponse.<PageResponse<FoodResponse>>builder()
                 .code(200)
@@ -43,8 +43,8 @@ public class FoodController {
     @GetMapping("/search")
     public ApiResponse<PageResponse<FoodResponse>> searchFoodsByName(
             @RequestParam String name,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam( defaultValue = "0") int page,
+            @RequestParam( defaultValue = "10") int size
     ) {
         return ApiResponse.<PageResponse<FoodResponse>>builder()
                 .code(200)

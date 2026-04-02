@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Staff/DashBoard";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
 import Orders from "../pages/Staff/orders/Orders";
 import Customer from "../pages/Staff/Customer";
 import Delivery from "../pages/Staff/Delivery";
@@ -17,40 +18,49 @@ import StaffDetail from "../pages/Admin/StaffDetail";
 import MenuManagement from "../pages/Admin/MenuManagement";
 import TableManagement from "../pages/Admin/TableManagement";
 import Menu from "../pages/Staff/Menu";
+import ProtectedRoute from "./ProtectedRoute";
+import RootRedirect from "./RootRedirect";
+import PublicRoute from "./PublicRoute";
 
 function AppRouter() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-
-
-       <Route path="/staff" element={<StaffLayout/>}>
-        <Route index element={<Dashboard/>} />
-        <Route path="customers" element ={<Customer/>}/>
-        <Route path="orders" element={<Orders />} />
-        <Route path="delivery" element = {<Delivery/>}/>
-        <Route path="reservations" element ={<ReservationPage/>}/>
-        <Route path="reservations/create" element ={<ReservationCreatePage/>}/>
-        <Route path="reservations/:reservationId/details" element ={<ReservationDetailPage/>}/>
-        <Route path="histories" element={<Activity/>} />
-        <Route path="menu" element = {<Menu/>}/>
+      <Route path="/" element={<RootRedirect />} />
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Route>
 
-      <Route path="/admin" element = {<AdminLayout/>}> 
-        <Route index element={<Dashboard/>} />
-        <Route path="customers" element ={<Customer/>}/>
-        <Route path="orders" element={<Orders />} />
-        <Route path="delivery" element = {<Delivery/>}/>
-        <Route path="reports" element = {<Reports/>}/>
-        <Route path="reservations" element ={<ReservationPage/>}/>
-        <Route path="reservations/create" element ={<ReservationCreatePage/>}/>
-        <Route path="reservations/:reservationId/details" element ={<ReservationDetailPage/>}/>
-        <Route path="histories" element={<Activity/>} />
-        <Route path="staffs" element={<Staff />} />
-        <Route path="menu" element = {<MenuManagement/>}/>
-        <Route path="tables" element={<TableManagement />} />
-        <Route path="staffs/:staffId" element={<StaffDetail/>}/>
+      <Route element={<ProtectedRoute allowedRoles={["STAFF", "ADMIN"]} />}>
+        <Route path="/staff" element={<StaffLayout/>}>
+          <Route index element={<Dashboard/>} />
+          <Route path="customers" element ={<Customer/>}/>
+          <Route path="orders" element={<Orders />} />
+          <Route path="delivery" element = {<Delivery/>}/>
+          <Route path="reservations" element ={<ReservationPage/>}/>
+          <Route path="reservations/create" element ={<ReservationCreatePage/>}/>
+          <Route path="reservations/:reservationId/details" element ={<ReservationDetailPage/>}/>
+          <Route path="histories" element={<Activity/>} />
+          <Route path="menu" element = {<Menu/>}/>
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+        <Route path="/admin" element = {<AdminLayout/>}> 
+          <Route index element={<AdminDashboard/>} />
+          <Route path="customers" element ={<Customer/>}/>
+          <Route path="orders" element={<Orders />} />
+          <Route path="delivery" element = {<Delivery/>}/>
+          <Route path="reports" element = {<Reports/>}/>
+          <Route path="reservations" element ={<ReservationPage/>}/>
+          <Route path="reservations/create" element ={<ReservationCreatePage/>}/>
+          <Route path="reservations/:reservationId/details" element ={<ReservationDetailPage/>}/>
+          <Route path="histories" element={<Activity/>} />
+          <Route path="staffs" element={<Staff />} />
+          <Route path="menu" element = {<MenuManagement/>}/>
+          <Route path="tables" element={<TableManagement />} />
+          <Route path="staffs/:staffId" element={<StaffDetail/>}/>
+        </Route>
       </Route>
     
     

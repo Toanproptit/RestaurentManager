@@ -26,8 +26,8 @@ public class ReservationController {
 
     @GetMapping
     public ApiResponse<PageResponse<ReservationResponse>> getReservations(
-            @RequestParam(defaultValue = "0") int page ,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         return ApiResponse.<PageResponse<ReservationResponse>>builder()
                 .code(200)
