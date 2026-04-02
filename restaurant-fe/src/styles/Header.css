@@ -33,5 +33,83 @@
 .header__actions {
   display: flex;
   align-items: center;
+  gap: 15px;
+}
+
+.header__profile {
+  display: flex;
+  align-items: center;
   gap: 10px;
+  margin-left: 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+.header__profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: opacity 0.2s ease;
+}
+
+.header__profile:hover img {
+  opacity: 0.8;
+}
+
+/* Dropdown Card */
+.header__dropdown-card {
+  position: absolute;
+  top: 120%; /* just below the profile */
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  min-width: 200px;
+  z-index: 10;
+  animation: slideDown 0.2s ease-out forwards;
+}
+
+.header__dropdown-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header__dropdown-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.header__dropdown-email {
+  font-size: 13px;
+  color: #64748b;
+  word-break: break-all;
+}
+
+.header__dropdown-role {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #3b82f6;
+  padding: 4px 8px;
+  border-radius: 4px;
+  align-self: flex-start;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

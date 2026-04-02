@@ -2,6 +2,8 @@ package org.example.restaurant_manager.exception;
 
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.enums.ErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -61,13 +63,16 @@ public class GlobalExceptionHandler {
                         .message(message)
                         .build());
     }
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception exception) {
-        return ResponseEntity.status(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode())
+        log.error("Unhandled exception occurred", exception);
+
+        return ResponseEntity.internalServerError()
                 .body(ApiResponse.<Void>builder()
-                        .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
-                        .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
+                        .code(9999)
+                        .message(exception.getMessage())
                         .build());
     }
 }

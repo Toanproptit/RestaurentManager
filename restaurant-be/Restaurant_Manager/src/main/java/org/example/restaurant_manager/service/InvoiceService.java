@@ -1,5 +1,6 @@
 package org.example.restaurant_manager.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.example.restaurant_manager.dto.request.CreateInvoiceRequest;
@@ -36,8 +37,9 @@ public class InvoiceService {
         }
 
         Invoice invoice = new Invoice();
-        invoice.setDate(request.getDate());
-    invoice.setTotal(resolveInvoiceTotal(order));
+        // Nếu frontend không gửi date thì tự set = thời điểm hiện tại
+        invoice.setDate(request != null && request.getDate() != null ? request.getDate() : new Date());
+        invoice.setTotal(resolveInvoiceTotal(order));
 
         invoice.attachOrder(order);
 

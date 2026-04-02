@@ -1,3 +1,4 @@
+import { useState, useEffect, useMemo } from "react";
 import "../../styles/Report.css";
 import {
   ResponsiveContainer,
@@ -9,52 +10,116 @@ import {
   Tooltip,
   BarChart,
   Bar,
+  Cell,
 } from "recharts";
-
-const revenueData = [
-  { month: "T1", revenue: 12500000, orders: 120 },
-  { month: "T2", revenue: 14800000, orders: 135 },
-  { month: "T3", revenue: 13200000, orders: 128 },
-  { month: "T4", revenue: 17600000, orders: 160 },
-  { month: "T5", revenue: 19800000, orders: 172 },
-  { month: "T6", revenue: 18500000, orders: 168 },
-  { month: "T7", revenue: 22100000, orders: 190 },
-  { month: "T8", revenue: 20900000, orders: 181 },
-  { month: "T9", revenue: 23800000, orders: 205 },
-  { month: "T10", revenue: 25200000, orders: 218 },
-  { month: "T11", revenue: 24100000, orders: 210 },
-  { month: "T12", revenue: 27900000, orders: 235 },
-];
-
-const topItems = [
-  { name: "Mì cay hải sản", sold: 320 },
-  { name: "Mì bò", sold: 280 },
-  { name: "Cơm chiên", sold: 245 },
-  { name: "Gà sốt cay", sold: 210 },
-  { name: "Trà đào", sold: 190 },
-];
+import {
+  getRevenueByDay,
+  getRevenueByMonth,
+  getRevenueByYear,
+  getTopSellingFoods,
+} from "../../service/report";
 
 const money = (value) =>
   new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(value ?? 0);
+
+const BAR_COLORS = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#14b8a6"];
+
+const MODES = [
+  { key: "year", label: "Năm" },
+  { key: "month", label: "Tháng" },
+  { key: "day", label: "Ngày" },
+];
 
 export default function Reports() {
-  const totalRevenue = revenueData.reduce((sum, item) => sum + item.revenue, 0);
-  const totalOrders = revenueData.reduce((sum, item) => sum + item.orders, 0);
-  const avgOrderValue = totalRevenue / totalOrders;
+  const [mode, setMode] = useState("month");
+  const [dailyData, setDailyData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [yearlyData, setYearlyData] = useState([]);
+  const [topFoods, setTopFoods] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      setLoading(true);
+      try {
+        const [dayRes, monthRes, yearRes, topRes] = await Promise.all([
+          getRevenueByDay(),
+          getRevenueByMonth(),
+          getRevenueByYear(),
+          getTopSellingFoods(),
+        ]);
+        setDailyData(dayRes?.data?.result ?? []);
+        setMonthlyData(monthRes?.data?.result ?? []);
+        setYearlyData(yearRes?.data?.result ?? []);
+        setTopFoods(topRes?.data?.result ?? []);
+      } catch (err) {
+        console.error("Lỗi khi tải dữ liệu báo cáo:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAll();
+  }, []);
+
+  // Chuyển đổi data thành format phù hợp với biểu đồ theo từng mode
+  const chartData = useMemo(() => {
+    if (mode === "year") {
+      return yearlyData.map((item) => ({
+        label: `${item.year}`,
+        revenue: item.revenue ?? 0,
+      }));
+    }
+    if (mode === "month") {
+      return monthlyData.map((item) => ({
+        label: `T${item.month}/${item.year}`,
+        revenue: item.revenue ?? 0,
+      }));
+    }
+    // day
+    return dailyData.map((item) => ({
+      label: `${item.day}/${item.month}/${item.year}`,
+      revenue: item.revenue ?? 0,
+    }));
+  }, [mode, dailyData, monthlyData, yearlyData]);
+
+  const totalRevenue = useMemo(
+    () => chartData.reduce((sum, d) => sum + d.revenue, 0),
+    [chartData]
+  );
+
+  const avgRevenue = chartData.length > 0 ? totalRevenue / chartData.length : 0;
+
+  const topFoodsChart = topFoods.map((f) => ({
+    name: f.foodName,
+    sold: f.totalQuantitySold ?? 0,
+    revenue: f.totalRevenue ?? 0,
+  }));
+
+  const chartTitle =
+    mode === "year"
+      ? "Doanh thu theo năm"
+      : mode === "month"
+        ? "Doanh thu theo tháng"
+        : "Doanh thu theo ngày";
 
   return (
     <div className="reports-page">
       <div className="reports-head">
-        <h2 className="reports-title">Reports</h2>
-
+        <h2 className="reports-title">Báo cáo doanh thu</h2>
         <div className="reports-filter">
-          <button className="active">Năm</button>
-          <button>Tháng</button>
-          <button>Tuần</button>
+          {MODES.map((m) => (
+            <button
+              key={m.key}
+              className={mode === m.key ? "active" : ""}
+              onClick={() => setMode(m.key)}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -62,15 +127,21 @@ export default function Reports() {
       <div className="reports-kpis">
         <div className="kpi-card">
           <p>Tổng doanh thu</p>
-          <h3>{money(totalRevenue)}</h3>
+          <h3>{loading ? "—" : money(totalRevenue)}</h3>
         </div>
         <div className="kpi-card">
-          <p>Tổng đơn hàng</p>
-          <h3>{totalOrders}</h3>
+          <p>Số kỳ có dữ liệu</p>
+          <h3>{loading ? "—" : chartData.length}</h3>
         </div>
         <div className="kpi-card">
-          <p>Giá trị TB / đơn</p>
-          <h3>{money(avgOrderValue)}</h3>
+          <p>
+            {mode === "year"
+              ? "Doanh thu TB / năm"
+              : mode === "month"
+                ? "Doanh thu TB / tháng"
+                : "Doanh thu TB / ngày"}
+          </p>
+          <h3>{loading ? "—" : money(avgRevenue)}</h3>
         </div>
       </div>
 
@@ -79,65 +150,103 @@ export default function Reports() {
         {/* Revenue chart */}
         <div className="chart-card large">
           <div className="chart-header">
-            <h3>Biểu đồ doanh thu theo tháng</h3>
-            <span>2026</span>
+            <h3>{chartTitle}</h3>
+            <span>{chartData.length} điểm dữ liệu</span>
           </div>
 
           <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData}>
-                <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
-
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" />
-                <YAxis
-                  tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`}
-                  width={45}
-                />
-                <Tooltip
-                  formatter={(value) => [money(value), "Doanh thu"]}
-                  labelFormatter={(label) => `Tháng ${label.replace("T", "")}`}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#16a34a"
-                  strokeWidth={3}
-                  fill="url(#colorRevenue)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <div className="reports-loading">Đang tải dữ liệu...</div>
+            ) : chartData.length === 0 ? (
+              <div className="reports-empty">Chưa có dữ liệu doanh thu</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 11 }}
+                    interval={mode === "day" ? "preserveStartEnd" : 0}
+                    angle={mode === "day" ? -30 : 0}
+                    textAnchor={mode === "day" ? "end" : "middle"}
+                    height={mode === "day" ? 48 : 30}
+                  />
+                  <YAxis
+                    tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`}
+                    width={50}
+                  />
+                  <Tooltip
+                    formatter={(value) => [money(value), "Doanh thu"]}
+                    labelFormatter={(label) => label}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#16a34a"
+                    strokeWidth={3}
+                    fill="url(#colorRevenue)"
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 5 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
         {/* Top items chart */}
-        <div className="chart-card">
+        {/* <div className="chart-card">
           <div className="chart-header">
-            <h3>Món bán chạy</h3>
+            <h3>Top 5 món bán chạy</h3>
+            <span>theo số lượng</span>
           </div>
 
           <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={topItems} layout="vertical" margin={{ left: 12 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  width={100}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip formatter={(value) => [`${value} món`, "Đã bán"]} />
-                <Bar dataKey="sold" fill="#2563eb" radius={[0, 6, 6, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <div className="reports-loading">Đang tải dữ liệu...</div>
+            ) : topFoodsChart.length === 0 ? (
+              <div className="reports-empty">Chưa có dữ liệu</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={topFoodsChart}
+                  layout="vertical"
+                  margin={{ left: 8, right: 16 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 11 }} />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    width={110}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip
+                    formatter={(value, name) =>
+                      name === "sold"
+                        ? [`${value} phần`, "Đã bán"]
+                        : [money(value), "Doanh thu"]
+                    }
+                  />
+                  <Bar dataKey="sold" radius={[0, 6, 6, 0]}>
+                    {topFoodsChart.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={BAR_COLORS[index % BAR_COLORS.length]}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

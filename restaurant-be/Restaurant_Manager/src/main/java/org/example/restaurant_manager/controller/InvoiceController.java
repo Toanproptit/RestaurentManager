@@ -25,7 +25,7 @@ public class InvoiceController {
 
     @PostMapping("/order/{orderId}")
     public InvoiceResponse createInvoice(
-            @PathVariable Long orderId,
+            @PathVariable("orderId") Long orderId,
             @RequestBody @Valid CreateInvoiceRequest invoice
     ) {
         return invoiceService.createInvoice(orderId, invoice);

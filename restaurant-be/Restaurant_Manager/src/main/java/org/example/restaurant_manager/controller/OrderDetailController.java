@@ -52,7 +52,7 @@ public class OrderDetailController {
     }
 
     @GetMapping("/{detailId}")
-    public ApiResponse<OrderDetailResponse> getById(@PathVariable Long detailId) {
+    public ApiResponse<OrderDetailResponse> getById(@PathVariable("detailId") Long detailId) {
         return ApiResponse.<OrderDetailResponse>builder()
                 .code(200)
                 .message("Success")
@@ -62,8 +62,8 @@ public class OrderDetailController {
 
     @PutMapping("/{detailId}")
     public ApiResponse<OrderDetailResponse> update(
-            @PathVariable Long detailId,
-            @RequestParam(required = false) Long foodId,
+            @PathVariable("detailId") Long detailId,
+            @RequestParam(name = "foodId", required = false) Long foodId,
             @RequestBody @Valid UpdateOrderDetailRequest orderDetail) {
 
         return ApiResponse.<OrderDetailResponse>builder()
@@ -74,7 +74,7 @@ public class OrderDetailController {
     }
 
     @DeleteMapping("/{detailId}")
-    public ApiResponse<Void> delete(@PathVariable Long detailId) {
+    public ApiResponse<Void> delete(@PathVariable("detailId") Long detailId) {
         orderDetailService.deleteById(detailId);
 
         return ApiResponse.<Void>builder()

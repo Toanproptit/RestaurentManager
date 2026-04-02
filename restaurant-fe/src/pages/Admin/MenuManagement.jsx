@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "../../styles/StaffManagement.css";
-import { createFood, updateFood as updateFoodApi, getFood, deleteFood as deleteFoodApi } from "../../service/food";
+import { createFood, updateFood as updateFoodApi, getFood, deleteFood as deleteFoodApi, searchFood } from "../../service/food";
 
 const API_URL = "http://localhost:8080";
 
@@ -20,12 +20,19 @@ export default function MenuManagement() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [searchName, setSearchName] = useState("");
+  const [query, setQuery] = useState("");
 
   // Load menu data from API
-  const loadMenu = useCallback(async (currentPage = 0) => {
+  const loadMenu = useCallback(async (currentPage = 0, currentQuery = query) => {
     try {
       setLoading(true);
-      const res = await getFood(currentPage, 6);
+      let res;
+      if (currentQuery) {
+        res = await searchFood(currentQuery, currentPage, 6);
+      } else {
+        res = await getFood(currentPage, 6);
+      }
       if (res?.status === 200) {
         const data = res.data.result;
         setMenus(data.content || []);
@@ -38,12 +45,12 @@ export default function MenuManagement() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [query]);
 
   // Load data on mount
   useEffect(() => {
-    loadMenu();
-  }, [loadMenu]);
+    loadMenu(0, query);
+  }, [loadMenu, query]);
 
 
 
@@ -181,17 +188,44 @@ export default function MenuManagement() {
     <div className="staff-container">
       <h2>Menu Management</h2>
 
-      <button
-        className="add-btn"
-        onClick={() => {
-          setEditingItem(null);
-          setForm(initialForm);
-          setShowModal(true);
-        }}
-        style={{ marginBottom: "20px" }}
-      >
-        + Add Menu Item
-      </button>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <button
+          className="add-btn"
+          onClick={() => {
+            setEditingItem(null);
+            setForm(initialForm);
+            setShowModal(true);
+          }}
+          style={{ marginBottom: 0 }}
+        >
+          + Add Menu Item
+        </button>
+
+        <div style={{ display: "flex", gap: "10px" }}>
+          <input
+            type="text"
+            placeholder="Search food by name..."
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setQuery(searchName);
+                loadMenu(0, searchName);
+              }
+            }}
+            style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc", minWidth: "250px" }}
+          />
+          <button
+            onClick={() => {
+              setQuery(searchName);
+              loadMenu(0, searchName);
+            }}
+            style={{ padding: "8px 16px", background: "#ea580c", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+          >
+            Search
+          </button>
+        </div>
+      </div>
 
       <div className="staff-list">
         {menus.map((item) => (
@@ -230,7 +264,7 @@ export default function MenuManagement() {
           <button
             className="pagination-button"
             disabled={page === 0}
-            onClick={() => loadMenu(page - 1)}
+            onClick={() => loadMenu(page - 1, query)}
           >
             ← Trước
           </button>
@@ -240,7 +274,7 @@ export default function MenuManagement() {
               <button
                 key={i}
                 className={`pagination-button ${page === i ? "active-page" : ""}`}
-                onClick={() => loadMenu(i)}
+                onClick={() => loadMenu(i, query)}
               >
                 {i + 1}
               </button>
@@ -250,7 +284,7 @@ export default function MenuManagement() {
           <button
             className="pagination-button"
             disabled={page === totalPages - 1}
-            onClick={() => loadMenu(page + 1)}
+            onClick={() => loadMenu(page + 1, query)}
           >
             Sau →
           </button>

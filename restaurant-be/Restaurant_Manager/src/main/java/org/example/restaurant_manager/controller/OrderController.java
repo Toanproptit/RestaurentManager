@@ -36,8 +36,8 @@ public class OrderController {
 
     @GetMapping
     public ApiResponse<PageResponse<OrderResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
 
         return ApiResponse.<PageResponse<OrderResponse>>builder()
@@ -49,7 +49,7 @@ public class OrderController {
 
 
     @GetMapping("/{id}")
-    public ApiResponse<OrderResponse> getById(@PathVariable Long id) {
+    public ApiResponse<OrderResponse> getById(@PathVariable("id") Long id) {
 
         return ApiResponse.<OrderResponse>builder()
                 .code(200)
@@ -61,7 +61,7 @@ public class OrderController {
 
     @PutMapping("/{id}")
     public ApiResponse<OrderResponse> update(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody @Valid UpdateOrderRequest order) {
 
         return ApiResponse.<OrderResponse>builder()
@@ -72,7 +72,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable("id") Long id) {
 
         orderService.delete(id);
 
