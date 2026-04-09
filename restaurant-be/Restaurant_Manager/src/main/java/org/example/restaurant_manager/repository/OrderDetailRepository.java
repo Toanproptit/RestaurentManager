@@ -31,7 +31,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
 	       "FROM OrderDetail od " +
 	       "JOIN od.food f " +
 	       "JOIN od.order o " +
-	       "WHERE YEAR(o.OrderDate) = :year AND MONTH(o.OrderDate) = :month " +
+	       "WHERE YEAR(CAST(o.OrderDate as date)) = :year AND MONTH(CAST(o.OrderDate as date)) = :month " +
 	       "GROUP BY f.id, f.name " +
 	       "ORDER BY SUM(od.quantity) DESC")
 	List<OrderCountByFoodResponse> getOrderCountByFoodOnMonth(@Param("year") int year, @Param("month") int month);
@@ -41,7 +41,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
 	       "FROM OrderDetail od " +
 	       "JOIN od.food f " +
 	       "JOIN od.order o " +
-	       "WHERE YEAR(o.OrderDate) = :year " +
+	       "WHERE YEAR(CAST(o.OrderDate as date)) = :year " +
 	       "GROUP BY f.id, f.name " +
 	       "ORDER BY SUM(od.quantity) DESC")
 	List<OrderCountByFoodResponse> getOrderCountByFoodOnYear(@Param("year") int year);
