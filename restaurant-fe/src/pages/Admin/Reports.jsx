@@ -17,6 +17,7 @@ import {
   getRevenueByMonth,
   getRevenueByYear,
   getTopSellingFoods,
+  getOrderCountByFood,
 } from "../../service/report";
 
 const money = (value) =>
@@ -42,6 +43,13 @@ export default function Reports() {
   const [topFoods, setTopFoods] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // New state for order count by food
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [orderCountData, setOrderCountData] = useState([]);
+  const [orderCountLoading, setOrderCountLoading] = useState(false);
+
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
@@ -64,6 +72,23 @@ export default function Reports() {
     };
     fetchAll();
   }, []);
+
+  // Fetch order count data when date changes
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      setOrderCountLoading(true);
+      try {
+        const res = await getOrderCountByFood(selectedDate);
+        setOrderCountData(res?.data?.result ?? []);
+      } catch (err) {
+        console.error("Lỗi khi tải dữ liệu đặt hàng:", err);
+        setOrderCountData([]);
+      } finally {
+        setOrderCountLoading(false);
+      }
+    };
+    fetchOrderCount();
+  }, [selectedDate]);
 
   // Chuyển đổi data thành format phù hợp với biểu đồ theo từng mode
   const chartData = useMemo(() => {
@@ -98,6 +123,11 @@ export default function Reports() {
     sold: f.totalQuantitySold ?? 0,
     revenue: f.totalRevenue ?? 0,
   }));
+
+  const totalOrderCount = useMemo(
+    () => orderCountData.reduce((sum, item) => sum + (item.orderCount ?? 0), 0),
+    [orderCountData]
+  );
 
   const chartTitle =
     mode === "year"
@@ -247,6 +277,68 @@ export default function Reports() {
             )}
           </div>
         </div> */}
+      </div>
+
+      {/* Order Count Section */}
+      <div className="reports-section-divider"></div>
+
+      <div className="reports-order-count-head">
+        <h2 className="reports-title">Thống kê số lần đặt hàng</h2>
+        <div className="date-picker-wrapper">
+          <label htmlFor="order-date-picker">Chọn ngày:</label>
+          <input
+            id="order-date-picker"
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="date-picker-input"
+          />
+        </div>
+      </div>
+
+      {/* Order Count KPI */}
+      <div className="reports-kpis">
+        <div className="kpi-card">
+          <p>Tổng số lần order</p>
+          <h3>{orderCountLoading ? "—" : totalOrderCount}</h3>
+        </div>
+        <div className="kpi-card">
+          <p>Số loại món ăn</p>
+          <h3>{orderCountLoading ? "—" : orderCountData.length}</h3>
+        </div>
+      </div>
+
+      {/* Order Count Table */}
+      <div className="chart-card">
+        <div className="chart-header">
+          <h3>Chi tiết số lần order từng món ăn</h3>
+          <span>{selectedDate}</span>
+        </div>
+
+        <div className="food-count-table-wrapper">
+          {orderCountLoading ? (
+            <div className="reports-loading">Đang tải dữ liệu...</div>
+          ) : orderCountData.length === 0 ? (
+            <div className="reports-empty">Chưa có dữ liệu đặt hàng</div>
+          ) : (
+            <table className="food-count-table">
+              <thead>
+                <tr>
+                  <th>Tên Món Ăn</th>
+                  <th>Số Lần Order</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderCountData.map((item, index) => (
+                  <tr key={item.foodId || index}>
+                    <td>{item.foodName}</td>
+                    <td className="order-count-cell">{item.orderCount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );

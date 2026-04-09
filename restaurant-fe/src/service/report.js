@@ -15,3 +15,9 @@ export const getRevenueByYear = async () => {
 export const getTopSellingFoods = async () => {
   return await api.get("/foods/top-selling");
 };
+
+export const getOrderCountByFood = async (date) => {
+  return await api.get("/reports/order-count-by-food", {
+    params: { date }
+  });
+};

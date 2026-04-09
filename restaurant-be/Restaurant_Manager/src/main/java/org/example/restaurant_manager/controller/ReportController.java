@@ -1,15 +1,18 @@
 package org.example.restaurant_manager.controller;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.DashboardSummaryResponse;
 import org.example.restaurant_manager.dto.response.RevenueStatisticsResponse;
+import org.example.restaurant_manager.dto.response.OrderCountByFoodResponse;
 import org.example.restaurant_manager.service.InvoiceService;
 import org.example.restaurant_manager.service.ReportService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -55,6 +58,16 @@ public class ReportController {
                 .code(200)
                 .message("success")
                 .result(invoiceService.getRevenueByYear())
+                .build();
+    }
+
+    @GetMapping("/order-count-by-food")
+    public ApiResponse<List<OrderCountByFoodResponse>> getOrderCountByFood(
+            @RequestParam(required = false) LocalDate date) {
+        return ApiResponse.<List<OrderCountByFoodResponse>>builder()
+                .code(200)
+                .message("success")
+                .result(reportService.getOrderCountByFood(date))
                 .build();
     }
 }
