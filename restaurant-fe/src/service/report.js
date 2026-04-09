@@ -16,8 +16,11 @@ export const getTopSellingFoods = async () => {
   return await api.get("/foods/top-selling");
 };
 
-export const getOrderCountByFood = async (date) => {
-  return await api.get("/reports/order-count-by-food", {
-    params: { date }
-  });
+export const getOrderCountByFood = async (date, month, year) => {
+  const params = {};
+  if (date) params.date = date;
+  if (month) params.month = month;
+  if (year) params.year = year;
+
+  return await api.get("/reports/order-count-by-food", { params });
 };

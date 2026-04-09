@@ -63,11 +63,13 @@ public class ReportController {
 
     @GetMapping("/order-count-by-food")
     public ApiResponse<List<OrderCountByFoodResponse>> getOrderCountByFood(
-            @RequestParam(required = false) LocalDate date) {
+            @RequestParam(required = false) LocalDate date,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year) {
         return ApiResponse.<List<OrderCountByFoodResponse>>builder()
                 .code(200)
                 .message("success")
-                .result(reportService.getOrderCountByFood(date))
+                .result(reportService.getOrderCountByFood(date, month, year))
                 .build();
     }
 }

@@ -25,4 +25,24 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
 	       "GROUP BY f.id, f.name " +
 	       "ORDER BY SUM(od.quantity) DESC")
 	List<OrderCountByFoodResponse> getOrderCountByFoodOnDate(@Param("date") LocalDate date);
+
+	@Query("SELECT new org.example.restaurant_manager.dto.response.OrderCountByFoodResponse(" +
+	       "f.id, f.name, SUM(od.quantity)) " +
+	       "FROM OrderDetail od " +
+	       "JOIN od.food f " +
+	       "JOIN od.order o " +
+	       "WHERE YEAR(o.OrderDate) = :year AND MONTH(o.OrderDate) = :month " +
+	       "GROUP BY f.id, f.name " +
+	       "ORDER BY SUM(od.quantity) DESC")
+	List<OrderCountByFoodResponse> getOrderCountByFoodOnMonth(@Param("year") int year, @Param("month") int month);
+
+	@Query("SELECT new org.example.restaurant_manager.dto.response.OrderCountByFoodResponse(" +
+	       "f.id, f.name, SUM(od.quantity)) " +
+	       "FROM OrderDetail od " +
+	       "JOIN od.food f " +
+	       "JOIN od.order o " +
+	       "WHERE YEAR(o.OrderDate) = :year " +
+	       "GROUP BY f.id, f.name " +
+	       "ORDER BY SUM(od.quantity) DESC")
+	List<OrderCountByFoodResponse> getOrderCountByFoodOnYear(@Param("year") int year);
 }

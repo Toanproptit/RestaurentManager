@@ -30,10 +30,20 @@ public class ReportService {
         );
     }
 
-    public List<OrderCountByFoodResponse> getOrderCountByFood(LocalDate date) {
-        if (date == null) {
-            date = LocalDate.now();
+    public List<OrderCountByFoodResponse> getOrderCountByFood(LocalDate date, Integer month, Integer year) {
+        // If date is provided, use it
+        if (date != null) {
+            return orderDetailRepository.getOrderCountByFoodOnDate(date);
         }
-        return orderDetailRepository.getOrderCountByFoodOnDate(date);
+        // If month and year are provided
+        if (month != null && year != null) {
+            return orderDetailRepository.getOrderCountByFoodOnMonth(year, month);
+        }
+        // If only year is provided
+        if (year != null) {
+            return orderDetailRepository.getOrderCountByFoodOnYear(year);
+        }
+        // Default: today
+        return orderDetailRepository.getOrderCountByFoodOnDate(LocalDate.now());
     }
 }
