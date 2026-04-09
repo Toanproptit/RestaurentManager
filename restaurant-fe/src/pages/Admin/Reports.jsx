@@ -299,7 +299,7 @@ export default function Reports() {
       {/* Order Count KPI */}
       <div className="reports-kpis">
         <div className="kpi-card">
-          <p>Tổng số lần order</p>
+          <p>Tổng số lượng order</p>
           <h3>{orderCountLoading ? "—" : totalOrderCount}</h3>
         </div>
         <div className="kpi-card">
@@ -311,7 +311,7 @@ export default function Reports() {
       {/* Order Count Table */}
       <div className="chart-card">
         <div className="chart-header">
-          <h3>Chi tiết số lần order từng món ăn</h3>
+          <h3>Chi tiết số lượng từng món ăn</h3>
           <span>{selectedDate}</span>
         </div>
 
@@ -325,7 +325,7 @@ export default function Reports() {
               <thead>
                 <tr>
                   <th>Tên Món Ăn</th>
-                  <th>Số Lần Order</th>
+                  <th>Số Lượng</th>
                 </tr>
               </thead>
               <tbody>

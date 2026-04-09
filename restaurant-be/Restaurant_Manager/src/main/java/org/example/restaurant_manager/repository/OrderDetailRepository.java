@@ -17,12 +17,12 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
 	java.util.List<OrderDetail> findByOrderId(Long orderId);
 
 	@Query("SELECT new org.example.restaurant_manager.dto.response.OrderCountByFoodResponse(" +
-	       "f.id, f.name, COUNT(DISTINCT od.order.id)) " +
+	       "f.id, f.name, SUM(od.quantity)) " +
 	       "FROM OrderDetail od " +
 	       "JOIN od.food f " +
 	       "JOIN od.order o " +
 	       "WHERE CAST(o.OrderDate as date) = :date " +
 	       "GROUP BY f.id, f.name " +
-	       "ORDER BY COUNT(DISTINCT od.order.id) DESC")
+	       "ORDER BY SUM(od.quantity) DESC")
 	List<OrderCountByFoodResponse> getOrderCountByFoodOnDate(@Param("date") LocalDate date);
 }
