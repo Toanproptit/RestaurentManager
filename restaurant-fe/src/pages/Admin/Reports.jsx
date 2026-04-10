@@ -17,6 +17,7 @@ import {
   getRevenueByMonth,
   getRevenueByYear,
   getTopSellingFoods,
+  getOrderCountByFood,
 } from "../../service/report";
 
 const money = (value) =>
@@ -42,6 +43,17 @@ export default function Reports() {
   const [topFoods, setTopFoods] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // New state for order count by food
+  const [filterMode, setFilterMode] = useState("day"); // day, month, year
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const today = new Date();
+  const [selectedMonth, setSelectedMonth] = useState(String(today.getMonth() + 1).padStart(2, "0"));
+  const [selectedYear, setSelectedYear] = useState(String(today.getFullYear()));
+  const [orderCountData, setOrderCountData] = useState([]);
+  const [orderCountLoading, setOrderCountLoading] = useState(false);
+
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
@@ -64,6 +76,30 @@ export default function Reports() {
     };
     fetchAll();
   }, []);
+
+  // Fetch order count data when date/month/year changes
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      setOrderCountLoading(true);
+      try {
+        let res;
+        if (filterMode === "day") {
+          res = await getOrderCountByFood(selectedDate, null, null);
+        } else if (filterMode === "month") {
+          res = await getOrderCountByFood(null, parseInt(selectedMonth), parseInt(selectedYear));
+        } else {
+          res = await getOrderCountByFood(null, null, parseInt(selectedYear));
+        }
+        setOrderCountData(res?.data?.result ?? []);
+      } catch (err) {
+        console.error("Lỗi khi tải dữ liệu đặt hàng:", err);
+        setOrderCountData([]);
+      } finally {
+        setOrderCountLoading(false);
+      }
+    };
+    fetchOrderCount();
+  }, [selectedDate, selectedMonth, selectedYear, filterMode]);
 
   // Chuyển đổi data thành format phù hợp với biểu đồ theo từng mode
   const chartData = useMemo(() => {
@@ -98,6 +134,11 @@ export default function Reports() {
     sold: f.totalQuantitySold ?? 0,
     revenue: f.totalRevenue ?? 0,
   }));
+
+  const totalOrderCount = useMemo(
+    () => orderCountData.reduce((sum, item) => sum + (item.orderCount ?? 0), 0),
+    [orderCountData]
+  );
 
   const chartTitle =
     mode === "year"
@@ -247,6 +288,147 @@ export default function Reports() {
             )}
           </div>
         </div> */}
+      </div>
+
+      {/* Order Count Section */}
+      <div className="reports-section-divider"></div>
+
+      <div className="reports-order-count-head">
+        <h2 className="reports-title">Thống kê số lượng món ăn</h2>
+        <div className="filter-mode-buttons">
+          <button
+            className={filterMode === "day" ? "active" : ""}
+            onClick={() => setFilterMode("day")}
+          >
+            Ngày
+          </button>
+          <button
+            className={filterMode === "month" ? "active" : ""}
+            onClick={() => setFilterMode("month")}
+          >
+            Tháng
+          </button>
+          <button
+            className={filterMode === "year" ? "active" : ""}
+            onClick={() => setFilterMode("year")}
+          >
+            Năm
+          </button>
+        </div>
+      </div>
+
+      {/* Date/Month/Year Picker */}
+      <div className="date-filter-wrapper">
+        {filterMode === "day" && (
+          <div className="date-picker-wrapper">
+            <label htmlFor="order-date-picker">Chọn ngày:</label>
+            <input
+              id="order-date-picker"
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="date-picker-input"
+            />
+          </div>
+        )}
+
+        {filterMode === "month" && (
+          <div className="month-year-picker-wrapper">
+            <div className="month-picker-wrapper">
+              <label htmlFor="order-month-picker">Tháng:</label>
+              <select
+                id="order-month-picker"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="month-year-picker-input"
+              >
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                  <option key={m} value={String(m).padStart(2, "0")}>
+                    Tháng {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="year-picker-wrapper">
+              <label htmlFor="order-year-picker-month">Năm:</label>
+              <input
+                id="order-year-picker-month"
+                type="number"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="month-year-picker-input"
+                min="2000"
+                max="2099"
+              />
+            </div>
+          </div>
+        )}
+
+        {filterMode === "year" && (
+          <div className="year-only-picker-wrapper">
+            <label htmlFor="order-year-picker">Năm:</label>
+            <input
+              id="order-year-picker"
+              type="number"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="month-year-picker-input"
+              min="2000"
+              max="2099"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Order Count KPI */}
+      <div className="reports-kpis">
+        <div className="kpi-card">
+          <p>Tổng số lượng order</p>
+          <h3>{orderCountLoading ? "—" : totalOrderCount}</h3>
+        </div>
+        <div className="kpi-card">
+          <p>Số loại món ăn</p>
+          <h3>{orderCountLoading ? "—" : orderCountData.length}</h3>
+        </div>
+      </div>
+
+      {/* Order Count Table */}
+      <div className="chart-card">
+        <div className="chart-header">
+          <h3>Chi tiết số lượng từng món ăn</h3>
+          <span>
+            {filterMode === "day"
+              ? selectedDate
+              : filterMode === "month"
+                ? `T${selectedMonth}/${selectedYear}`
+                : selectedYear}
+          </span>
+        </div>
+
+        <div className="food-count-table-wrapper">
+          {orderCountLoading ? (
+            <div className="reports-loading">Đang tải dữ liệu...</div>
+          ) : orderCountData.length === 0 ? (
+            <div className="reports-empty">Chưa có dữ liệu đặt hàng</div>
+          ) : (
+            <table className="food-count-table">
+              <thead>
+                <tr>
+                  <th>Tên Món Ăn</th>
+                  <th>Số Lượng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderCountData.map((item, index) => (
+                  <tr key={item.foodId || index}>
+                    <td>{item.foodName}</td>
+                    <td className="order-count-cell">{item.orderCount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );
