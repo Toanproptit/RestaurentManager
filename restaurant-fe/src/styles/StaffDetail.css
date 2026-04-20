@@ -1,0 +1,239 @@
+/* src/styles/StaffDetail.css */
+.staff-detail-container {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 60px);
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.staff-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.staff-detail-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.btn-back:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  transform: translateX(-2px);
+}
+
+.staff-detail-card {
+  display: flex;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  max-width: 900px;
+  border: 1px solid #e2e8f0;
+}
+
+.staff-detail-avatar {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  padding: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 250px;
+}
+
+.staff-detail-avatar img {
+  border-radius: 50%;
+  box-shadow: 0 12px 24px rgba(34, 197, 94, 0.25);
+  border: 4px solid #ffffff;
+  transition: transform 0.3s ease;
+}
+
+.staff-detail-avatar img:hover {
+  transform: scale(1.05);
+}
+
+.staff-detail-info {
+  padding: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.staff-name {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.5px;
+}
+
+.staff-role {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 30px;
+  align-self: flex-start;
+  text-transform: uppercase;
+}
+
+.badge-admin {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.badge-staff {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.staff-info-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.info-item:hover {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.info-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+}
+
+.info-content label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-content p {
+  margin: 0;
+  font-size: 16px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.staff-detail-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.staff-detail-loading,
+.staff-detail-not-found {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  gap: 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #22c55e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .staff-detail-card {
+    flex-direction: column;
+  }
+  
+  .staff-detail-avatar {
+    padding: 30px;
+    min-height: 200px;
+  }
+  
+  .staff-detail-info {
+    padding: 24px;
+  }
+}

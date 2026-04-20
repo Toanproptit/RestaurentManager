@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.example.restaurant_manager.dto.response.DiningTableResponse;
 import org.example.restaurant_manager.dto.response.OrderResponse;
+import org.example.restaurant_manager.dto.response.UserResponse;
 import org.example.restaurant_manager.entity.Order;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,10 @@ public class OrderMapper {
             ? diningTableMapper.toDiningTableResponse(order.getDiningTable())
             : null;
 
+        UserResponse user = order.getUser() != null
+            ? new UserResponse(order.getUser().getId(), order.getUser().getName(), order.getUser().getEmail(), order.getUser().getRole().toString())
+            : null;
+
         return new OrderResponse(
                 order.getId(),
                 order.getStatus(),
@@ -31,7 +36,8 @@ public class OrderMapper {
                 order.getOrderDetails().stream()
                         .map(orderDetailMapper::toOrderDetailResponse)
                         .collect(Collectors.toList()),
-            diningTable
+            diningTable,
+            user
         );
     }
 }

@@ -158,9 +158,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Body: Chart + Top Foods ── */}
-      {/* <div className="dashboard-body"> */}
-      {/* Left: Top 5 món bán chạy */}
-      {/* <div className="orders-list">
+      <div className="dashboard-body">
+        {/* Left: Top 5 món bán chạy */}
+        <div className="orders-list">
           <div className="orders-header">
             <h3>🏆 Top 5 món bán chạy</h3>
           </div>
@@ -196,9 +196,9 @@ export default function AdminDashboard() {
               ))}
             </div>
           )}
-        </div> */}
+        </div>
 
-      {/* <div className="orders-list">
+        {/* <div className="orders-list">
           <div className="orders-header">
             <h3>📈 Doanh thu theo tháng</h3>
             <span className="dash-badge">Năm hiện tại</span>
@@ -244,8 +244,8 @@ export default function AdminDashboard() {
               </ResponsiveContainer>
             </div>
           )}
-        </div>
-      </div> */}
+        </div> */}
+      </div>
 
       {/* ── Thống kê bàn ── */}
       <div className="orders-list">

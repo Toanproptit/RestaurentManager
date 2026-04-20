@@ -8,6 +8,8 @@ import org.example.restaurant_manager.dto.response.ApiResponse;
 import org.example.restaurant_manager.dto.response.OrderResponse;
 import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.service.OrderService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -25,6 +27,15 @@ public class OrderController {
 
     @PostMapping
     public ApiResponse<OrderResponse> create(@RequestBody @Valid CreateOrderRequest order) {
+        // Lấy username từ JWT token
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            username = authentication.getName();
+        }
+
+        order.setUsername(username);
 
         return ApiResponse.<OrderResponse>builder()
                 .code(200)

@@ -47,11 +47,11 @@
 }
 
 /* ===== BODY ===== */
-/* .dashboard-body {
-  display: grid;
-  grid-template-columns: 360px 1fr;
+.dashboard-body {
+  display: flex;
+  flex-direction: column;
   gap: 24px;
-} */
+}
 
 /* ===== LEFT: ORDERS LIST ===== */
 .orders-list {
