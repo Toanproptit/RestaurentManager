@@ -10,12 +10,14 @@ import org.example.restaurant_manager.dto.response.OrderResponse;
 import org.example.restaurant_manager.dto.response.PageResponse;
 import org.example.restaurant_manager.entity.DiningTable;
 import org.example.restaurant_manager.entity.Order;
+import org.example.restaurant_manager.entity.User;
 import org.example.restaurant_manager.enums.ErrorCode;
 import org.example.restaurant_manager.enums.OrderStatus;
 import org.example.restaurant_manager.exception.AppException;
 import org.example.restaurant_manager.mapper.OrderMapper;
 import org.example.restaurant_manager.repository.DiningTableRepository;
 import org.example.restaurant_manager.repository.OrderRepository;
+import org.example.restaurant_manager.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -29,13 +31,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final DiningTableRepository diningTableRepository;
+    private final UserRepository userRepository;
 
     public OrderService(OrderRepository orderRepository,
                         OrderMapper orderMapper,
-                        DiningTableRepository diningTableRepository) {
+                        DiningTableRepository diningTableRepository,
+                        UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.diningTableRepository = diningTableRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -46,6 +51,14 @@ public class OrderService {
         order.setStatus(OrderStatus.PENDING);
         order.setOrderDate(new Date());
         order.setOrderDetails(new ArrayList<>());
+
+        if (request.getUsername() != null) {
+            User user = getUserByUsername(request.getUsername());
+            order.setUser(user);
+        } else if (request.getUserId() != null) {
+            User user = getUser(request.getUserId());
+            order.setUser(user);
+        }
 
         replaceDiningTable(order, request.getDiningTableId());
 
@@ -155,6 +168,16 @@ public class OrderService {
     private DiningTable getDiningTable(Long id) {
         return diningTableRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DINING_TABLE_NOT_FOUND));
+    }
+
+    private User getUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private User getUserByUsername(String username) {
+        return userRepository.findByName(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
 }

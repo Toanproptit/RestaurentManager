@@ -17,4 +17,5 @@ public class OrderResponse {
     private Date orderDate;
     private List<OrderDetailResponse> orderDetails;
     private DiningTableResponse diningTable;
+    private UserResponse user;
 }

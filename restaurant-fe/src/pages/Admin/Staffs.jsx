@@ -128,7 +128,6 @@ export default function Staffs() {
           <div key={staff.id} className="staff-card">
             <div>
               <h3>{staff.name}</h3>
-              <p>{staff.email}</p>
 
               {staff.role && (
                 <span className="status active">
@@ -149,12 +148,6 @@ export default function Staffs() {
                 style={{ backgroundColor: "#22c55e" }}
               >
                 Edit
-              </button>
-              <button
-                onClick={() => handleDelete(staff.id)}
-                style={{ backgroundColor: "#22c55e" }}
-              >
-                Delete
               </button>
             </div>
           </div>

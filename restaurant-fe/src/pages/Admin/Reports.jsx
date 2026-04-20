@@ -219,7 +219,8 @@ export default function Reports() {
                     height={mode === "day" ? 48 : 30}
                   />
                   <YAxis
-                    tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`}
+                    tickFormatter
+                    ={(v) => `${(v / 1000000).toFixed(0)}M`}
                     width={50}
                   />
                   <Tooltip
