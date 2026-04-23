@@ -1,0 +1,13 @@
+# IDE
+.idea/
+
+# Node
+node_modules/
+
+# Build
+dist/
+build/
+
+# Env
+.env
+**/.env
